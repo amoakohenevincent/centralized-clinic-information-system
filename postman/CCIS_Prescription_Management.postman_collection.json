@@ -1,0 +1,204 @@
+{
+  "info": {
+    "name": "CCIS Prescription Management Module API",
+    "_postman_id": "b3191f63-394d-4954-bf42-998f8cc1ccis",
+    "description": "Comprehensive Postman test collection for the Centralized Clinic Information System (CCIS) Prescription Management Component.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "doctorToken",
+      "value": "YOUR_DOCTOR_JWT_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "pharmacistToken",
+      "value": "YOUR_PHARMACIST_JWT_TOKEN",
+      "type": "string"
+    },
+    {
+      "key": "prescriptionId",
+      "value": "6739f4001b4e2d001a23de44",
+      "type": "string"
+    },
+    {
+      "key": "patientId",
+      "value": "654c1a2f1b4e2d001a23bc01",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "2. Get Dashboard Statistics",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/prescriptions/dashboard-stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "prescriptions", "dashboard-stats"]
+        }
+      }
+    },
+    {
+      "name": "3. Create Prescription (Doctor Only)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patientId\": \"654c1a2f1b4e2d001a23bc01\",\n  \"patientName\": \"Kofi Mensah\",\n  \"patientIdentifier\": \"STU-2024-8841\",\n  \"consultationId\": \"654c1b5e1b4e2d001a23bc99\",\n  \"clinicalDiagnosis\": \"Acute Bronchitis with productive cough\",\n  \"generalInstructions\": \"Hydrate generously and take with food\",\n  \"items\": [\n    {\n      \"medicineId\": \"654c09ef1b4e2d001a23ba10\",\n      \"medicineName\": \"Amoxicillin Trihydrate\",\n      \"strength\": \"500mg\",\n      \"form\": \"Capsule\",\n      \"dosage\": \"1 capsule\",\n      \"frequency\": \"Three times daily (TDS)\",\n      \"duration\": \"7 days\",\n      \"quantityPrescribed\": 21,\n      \"instructions\": \"Take after meals at 8 hour intervals\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/prescriptions",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "prescriptions"]
+        }
+      }
+    },
+    {
+      "name": "4. Get All Prescriptions (Filtered)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/prescriptions?status=pending&page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "prescriptions"],
+          "query": [
+            { "key": "status", "value": "pending" },
+            { "key": "page", "value": "1" },
+            { "key": "limit", "value": "10" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Get Single Prescription By ID",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/prescriptions/{{prescriptionId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "prescriptions", "{{prescriptionId}}"]
+        }
+      }
+    },
+    {
+      "name": "6. Update Prescription Before Dispense (Doctor Only)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reason\": \"Adjusted general instructions following lab culture review\",\n  \"generalInstructions\": \"Updated: Drink plenty of warm water. Avoid dairy products.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/prescriptions/{{prescriptionId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "prescriptions", "{{prescriptionId}}"]
+        }
+      }
+    },
+    {
+      "name": "7. Pharmacy Dispense Handoff (Pharmacist Only)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{pharmacistToken}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"partially_dispensed\",\n  \"dispensingNotes\": \"Amoxicillin dispensed with counseling. Second item out of stock.\",\n  \"itemsDispensed\": [\n    {\n      \"medicineId\": \"654c09ef1b4e2d001a23ba10\",\n      \"quantityDispensed\": 21,\n      \"batchNumber\": \"BAT-2026-99\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/prescriptions/{{prescriptionId}}/dispense-status",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "prescriptions", "{{prescriptionId}}", "dispense-status"]
+        }
+      }
+    },
+    {
+      "name": "8. Get Patient Prescription History",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{doctorToken}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/prescriptions/patient/{{patientId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "prescriptions", "patient", "{{patientId}}"]
+        }
+      }
+    }
+  ]
+}

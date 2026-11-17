@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCIS — Prescription Management Module</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            clinic: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- React & ReactDOM -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel for JSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    @media print {
+      body * { visibility: hidden; }
+      .printable-area, .printable-area * { visibility: visible; }
+      .printable-area { position: absolute; left: 0; top: 0; width: 100%; border: none !important; shadow: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, createContext, useContext } = React;
+
+    // --- SHARED DATA & CATALOGUE ---
+    const INITIAL_MEDICINE_CATALOGUE = [
+      {
+        _id: '654c09ef1b4e2d001a23ba10',
+        code: 'MED-AMX-500',
+        name: 'Amoxicillin Trihydrate',
+        genericName: 'Amoxicillin',
+        category: 'Antibiotics',
+        strength: '500mg',
+        form: 'Capsule',
+        unitOfMeasure: 'Capsule',
+        currentStock: 180,
+        reorderLevel: 30,
+        isControlled: false,
+        isActive: true
+      },
+      {
+        _id: '654c09ef1b4e2d001a23ba25',
+        code: 'MED-PCM-500',
+        name: 'Paracetamol BP',
+        genericName: 'Acetaminophen',
+        category: 'Analgesics & Antipyretics',
+        strength: '500mg',
+        form: 'Tablet',
+        unitOfMeasure: 'Tablet',
+        currentStock: 450,
+        reorderLevel: 50,
+        isControlled: false,
+        isActive: true
+      },
+      {
+        _id: '654c09ef1b4e2d001a23ba33',
+        code: 'MED-IBU-400',
+        name: 'Ibuprofen BP',
+        genericName: 'Ibuprofen',
+        category: 'NSAIDs',
+        strength: '400mg',
+        form: 'Tablet',
+        unitOfMeasure: 'Tablet',
+        currentStock: 95,
+        reorderLevel: 25,
+        isControlled: false,
+        isActive: true
+      },
+      {
+        _id: '654c09ef1b4e2d001a23ba48',
+        code: 'MED-MET-500',
+        name: 'Metformin Hydrochloride',
+        genericName: 'Metformin',
+        category: 'Antidiabetics',
+        strength: '500mg',
+        form: 'Tablet',
+        unitOfMeasure: 'Tablet',
+        currentStock: 220,
+        reorderLevel: 40,
+        isControlled: false,
+        isActive: true
+      },
+      {
+        _id: '654c09ef1b4e2d001a23ba59',
+        code: 'MED-AML-010',
+        name: 'Amlodipine Besylate',
+        genericName: 'Amlodipine',
+        category: 'Antihypertensives',
+        strength: '10mg',
+        form: 'Tablet',
+        unitOfMeasure: 'Tablet',
+        currentStock: 140,
+        reorderLevel: 20,
+        isControlled: false,
+        isActive: true
+      },
+      {
+        _id: '654c09ef1b4e2d001a23ba62',
+        code: 'MED-SLB-100',
+        name: 'Salbutamol Inhaler',
+        genericName: 'Albuterol',
+        category: 'Respiratory / Bronchodilators',
+        strength: '100mcg/dose',
+        form: 'Inhaler',
+        unitOfMeasure: 'Canister',
+        currentStock: 8,
+        reorderLevel: 15,
+        isControlled: false,
+        isActive: true
+      },
+      {
+        _id: '654c09ef1b4e2d001a23ba77',
+        code: 'MED-AZI-500',
+        name: 'Azithromycin Monohydrate',
+        genericName: 'Azithromycin',
+        category: 'Antibiotics',
+        strength: '500mg',
+        form: 'Tablet',
+        unitOfMeasure: 'Tablet',
+        currentStock: 0,
+        reorderLevel: 20,
+        isControlled: false,
+        isActive: true
+      },
+      {
+        _id: '654c09ef1b4e2d001a23ba88',
+        code: 'MED-TRM-050',
+        name: 'Tramadol Hydrochloride',
+        genericName: 'Tramadol',
+        category: 'Opioid Analgesics',
+        strength: '50mg',
+        form: 'Capsule',
+        unitOfMeasure: 'Capsule',
+        currentStock: 60,
+        reorderLevel: 20,
+        isControlled: true,
+        isActive: true
+      }
+    ];
+
+    const INITIAL_PRESCRIPTIONS = [
+      {
+        _id: 'rx_001',
+        prescriptionNumber: 'RX-202611-0001',
+        patientId: 'pat_001',
+        patientName: 'Kofi Mensah',
+        patientIdentifier: 'STU-2024-8841',
+        doctorId: 'doc_001',
+        doctorName: 'Dr. John Mensah, MD',
+        consultationId: 'con_001',
+        prescriptionDate: '2026-11-17T09:30:00.000Z',
+        status: 'pending',
+        clinicalDiagnosis: 'Acute Bacterial Tonsillitis with pyrexia',
+        generalInstructions: 'Complete full course. Drink warm water and avoid cold drinks.',
+        isControlledMedication: false,
+        items: [
+          {
+            medicineId: '654c09ef1b4e2d001a23ba10',
+            medicineName: 'Amoxicillin Trihydrate',
+            strength: '500mg',
+            form: 'Capsule',
+            dosage: '1 capsule',
+            frequency: 'Three times daily (TDS)',
+            duration: '7 days',
+            quantityPrescribed: 21,
+            quantityDispensed: 0,
+            itemStatus: 'pending',
+            instructions: 'Take after meals every 8 hours'
+          },
+          {
+            medicineId: '654c09ef1b4e2d001a23ba25',
+            medicineName: 'Paracetamol BP',
+            strength: '500mg',
+            form: 'Tablet',
+            dosage: '2 tablets',
+            frequency: 'As needed / PRN',
+            duration: '3 days',
+            quantityPrescribed: 12,
+            quantityDispensed: 0,
+            itemStatus: 'pending',
+            instructions: 'Take for fever or throat pain. Max 8 tablets daily.'
+          }
+        ],
+        auditTrail: [
+          { modifiedAt: '2026-11-17T09:30:00.000Z', action: 'created', reason: 'Created after consultation' }
+        ],
+        dispensingHistory: []
+      },
+      {
+        _id: 'rx_002',
+        prescriptionNumber: 'RX-202611-0002',
+        patientId: 'pat_002',
+        patientName: 'Ama Serwaa',
+        patientIdentifier: 'STU-2023-4109',
+        doctorId: 'doc_001',
+        doctorName: 'Dr. John Mensah, MD',
+        consultationId: 'con_002',
+        prescriptionDate: '2026-11-16T14:15:00.000Z',
+        status: 'partially_dispensed',
+        clinicalDiagnosis: 'Bronchial Asthma Exacerbation',
+        generalInstructions: 'Rinse mouth after inhaler use. Return immediately if breathlessness persists.',
+        isControlledMedication: false,
+        items: [
+          {
+            medicineId: '654c09ef1b4e2d001a23ba62',
+            medicineName: 'Salbutamol Inhaler',
+            strength: '100mcg/dose',
+            form: 'Inhaler',
+            dosage: '2 puffs',
+            frequency: 'As needed / PRN',
+            duration: '30 days',
+            quantityPrescribed: 1,
+            quantityDispensed: 1,
+            itemStatus: 'dispensed',
+            instructions: 'Inhale 2 puffs for acute shortness of breath'
+          },
+          {
+            medicineId: '654c09ef1b4e2d001a23ba77',
+            medicineName: 'Azithromycin Monohydrate',
+            strength: '500mg',
+            form: 'Tablet',
+            dosage: '1 tablet',
+            frequency: 'Once daily (OD)',
+            duration: '3 days',
+            quantityPrescribed: 3,
+            quantityDispensed: 0,
+            itemStatus: 'backordered',
+            instructions: 'Stock-out at clinic pharmacy. Awaiting delivery.'
+          }
+        ],
+        auditTrail: [
+          { modifiedAt: '2026-11-16T14:15:00.000Z', action: 'created', reason: 'Created' },
+          { modifiedAt: '2026-11-16T15:00:00.000Z', action: 'dispense_recorded', reason: 'Inhaler dispensed, antibiotic backordered' }
+        ],
+        dispensingHistory: [
+          {
+            dispensedAt: '2026-11-16T15:00:00.000Z',
+            pharmacistName: 'Pharm. Sarah Boateng',
+            notes: 'Salbutamol dispensed. Azithromycin currently stock-out; patient notified.',
+            itemsDispensed: [{ medicineId: '654c09ef1b4e2d001a23ba62', dispensedQuantity: 1, batchNumber: 'SLB-2026-04' }]
+          }
+        ]
+      },
+      {
+        _id: 'rx_003',
+        prescriptionNumber: 'RX-202611-0003',
+        patientId: 'pat_003',
+        patientName: 'Prof. Ernest Addo',
+        patientIdentifier: 'STF-1998-0042',
+        doctorId: 'doc_001',
+        doctorName: 'Dr. John Mensah, MD',
+        consultationId: 'con_003',
+        prescriptionDate: '2026-11-15T11:00:00.000Z',
+        status: 'fulfilled',
+        clinicalDiagnosis: 'Essential Hypertension & T2 Diabetes Routine Refill',
+        generalInstructions: 'Low salt diet. Morning glucose checks.',
+        isControlledMedication: false,
+        items: [
+          {
+            medicineId: '654c09ef1b4e2d001a23ba59',
+            medicineName: 'Amlodipine Besylate',
+            strength: '10mg',
+            form: 'Tablet',
+            dosage: '1 tablet',
+            frequency: 'Once daily (OD)',
+            duration: '30 days',
+            quantityPrescribed: 30,
+            quantityDispensed: 30,
+            itemStatus: 'dispensed',
+            instructions: 'Take in morning with water'
+          },
+          {
+            medicineId: '654c09ef1b4e2d001a23ba48',
+            medicineName: 'Metformin Hydrochloride',
+            strength: '500mg',
+            form: 'Tablet',
+            dosage: '1 tablet',
+            frequency: 'Twice daily (BD)',
+            duration: '30 days',
+            quantityPrescribed: 60,
+            quantityDispensed: 60,
+            itemStatus: 'dispensed',
+            instructions: 'Take with or right after meals'
+          }
+        ],
+        auditTrail: [{ modifiedAt: '2026-11-15T11:00:00.000Z', action: 'created', reason: 'Routine monthly refill' }],
+        dispensingHistory: [
+          {
+            dispensedAt: '2026-11-15T11:45:00.000Z',
+            pharmacistName: 'Pharm. Sarah Boateng',
+            notes: 'Complete monthly supply dispensed with adherence counseling.',
+            itemsDispensed: [
+              { medicineId: '654c09ef1b4e2d001a23ba59', dispensedQuantity: 30, batchNumber: 'AML-2026-88' },
+              { medicineId: '654c09ef1b4e2d001a23ba48', dispensedQuantity: 60, batchNumber: 'MET-2026-12' }
+            ]
+          }
+        ]
+      }
+    ];
+
+    const CLINICAL_CONSULTATIONS = [
+      {
+        consultationId: 'con_001',
+        patientId: 'pat_001',
+        patientName: 'Kofi Mensah',
+        patientIdentifier: 'STU-2024-8841',
+        age: 21,
+        gender: 'Male',
+        diagnosis: 'Acute Bacterial Tonsillitis with pyrexia',
+        allergies: ['Penicillin (mild skin rash reported)']
+      },
+      {
+        consultationId: 'con_002',
+        patientId: 'pat_002',
+        patientName: 'Ama Serwaa',
+        patientIdentifier: 'STU-2023-4109',
+        age: 22,
+        gender: 'Female',
+        diagnosis: 'Moderate Persistent Asthma with Nocturnal Wheeze',
+        allergies: ['Aspirin / NSAIDs (bronchospasm risk)']
+      },
+      {
+        consultationId: 'con_003',
+        patientId: 'pat_003',
+        patientName: 'Prof. Ernest Addo',
+        patientIdentifier: 'STF-1998-0042',
+        age: 58,
+        gender: 'Male',
+        diagnosis: 'Type 2 Diabetes Mellitus & Stage 1 Hypertension',
+        allergies: ['No known drug allergies (NKDA)']
+      }
+    ];
+
+    // Local Storage helpers
+    const loadPrescriptions = () => {
+      const stored = localStorage.getItem('ccis_prescriptions');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e) {}
+      }
+      localStorage.setItem('ccis_prescriptions', JSON.stringify(INITIAL_PRESCRIPTIONS));
+      return INITIAL_PRESCRIPTIONS;
+    };
+
+    const savePrescriptions = (data) => {
+      localStorage.setItem('ccis_prescriptions', JSON.stringify(data));
+    };
+
+    // --- REUSABLE UI COMPONENTS ---
+    const Badge = ({ status = 'pending', size = 'md' }) => {
+      const configs = {
+        pending: { label: 'Pending Pharmacy', bg: 'bg-amber-50 text-amber-700 border-amber-200', dot: 'bg-amber-500' },
+        partially_dispensed: { label: 'Partially Dispensed', bg: 'bg-blue-50 text-blue-700 border-blue-200', dot: 'bg-blue-500' },
+        fulfilled: { label: 'Fulfilled', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
+        pending_backorder: { label: 'Pending Backorder', bg: 'bg-purple-50 text-purple-700 border-purple-200', dot: 'bg-purple-500' },
+        cancelled: { label: 'Cancelled', bg: 'bg-rose-50 text-rose-700 border-rose-200', dot: 'bg-rose-500' },
+        dispensed: { label: 'Dispensed', bg: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
+        backordered: { label: 'Backordered', bg: 'bg-purple-50 text-purple-700 border-purple-200', dot: 'bg-purple-500' }
+      };
+      const cfg = configs[status] || { label: status, bg: 'bg-slate-100 text-slate-700 border-slate-200', dot: 'bg-slate-400' };
+      const sz = size === 'sm' ? 'px-2 py-0.5 text-xs' : 'px-2.5 py-1 text-xs font-medium';
+      return (
+        <span className={`inline-flex items-center gap-1.5 rounded-full border ${cfg.bg} ${sz}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+          <span>{cfg.label}</span>
+        </span>
+      );
+    };
+
+    const StatCard = ({ title, count, subtitle, color = 'teal', onClick, isActive }) => {
+      const styles = {
+        teal: { bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-100 hover:border-teal-300', active: 'border-teal-500 ring-2 ring-teal-500/20' },
+        amber: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100 hover:border-amber-300', active: 'border-amber-500 ring-2 ring-amber-500/20' },
+        blue: { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-100 hover:border-blue-300', active: 'border-blue-500 ring-2 ring-blue-500/20' },
+        emerald: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-100 hover:border-emerald-300', active: 'border-emerald-500 ring-2 ring-emerald-500/20' },
+        purple: { bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-100 hover:border-purple-300', active: 'border-purple-500 ring-2 ring-purple-500/20' }
+      }[color];
+      return (
+        <div onClick={onClick} className={`p-5 bg-white rounded-xl border transition-all shadow-xs cursor-pointer ${isActive ? styles.active : styles.border}`}>
+          <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">{title}</div>
+          <div className="mt-2 text-3xl font-bold tracking-tight text-slate-900">{count}</div>
+          {subtitle && <p className="mt-1 text-xs text-slate-500">{subtitle}</p>}
+        </div>
+      );
+    };
+
+    // --- MAIN APPLICATION COMPONENT ---
+    function App() {
+      const [role, setRole] = useState('doctor'); // 'doctor' | 'pharmacist' | 'nurse'
+      const [tab, setTab] = useState('dashboard');
+      const [prescriptions, setPrescriptions] = useState(loadPrescriptions());
+      const [selectedRx, setSelectedRx] = useState(prescriptions[0] || null);
+
+      // Create Form State
+      const [selectedCon, setSelectedCon] = useState(CLINICAL_CONSULTATIONS[0]);
+      const [diagnosis, setDiagnosis] = useState(CLINICAL_CONSULTATIONS[0].diagnosis);
+      const [instructions, setInstructions] = useState('');
+      const [items, setItems] = useState([]);
+      const [isControlled, setIsControlled] = useState(false);
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [feedback, setFeedback] = useState(null);
+
+      // Pharmacist Dispensing Simulation State
+      const [dispenseQtyMap, setDispenseQtyMap] = useState({});
+      const [dispenseStatusInput, setDispenseStatusInput] = useState('pending');
+      const [dispenseNotes, setDispenseNotes] = useState('');
+
+      const updatePrescriptionList = (newList) => {
+        setPrescriptions(newList);
+        savePrescriptions(newList);
+      };
+
+      // Select Consultation handler
+      const handleConSelect = (conId) => {
+        const found = CLINICAL_CONSULTATIONS.find(c => c.consultationId === conId);
+        if (found) {
+          setSelectedCon(found);
+          setDiagnosis(found.diagnosis);
+        }
+      };
+
+      // Add medicine from catalogue
+      const handleAddMedicine = (med) => {
+        if (items.some(i => i.medicineId === med._id)) {
+          alert(`'${med.name}' is already added to this prescription.`);
+          return;
+        }
+        if (med.isControlled) setIsControlled(true);
+        const newItem = {
+          medicineId: med._id,
+          medicineName: med.name,
+          strength: med.strength,
+          form: med.form,
+          dosage: med.form === 'Tablet' ? '1 tablet' : med.form === 'Capsule' ? '1 capsule' : '5ml',
+          frequency: 'Three times daily (TDS)',
+          duration: '5 days',
+          quantityPrescribed: 15,
+          instructions: 'Take after food'
+        };
+        setItems([...items, newItem]);
+        setIsModalOpen(false);
+      };
+
+      // Create prescription submit
+      const handleCreatePrescription = (e) => {
+        e.preventDefault();
+        if (items.length === 0) {
+          alert('Prescription must contain at least one medication item.');
+          return;
+        }
+        const newSeq = String(prescriptions.length + 1).padStart(4, '0');
+        const newRx = {
+          _id: 'rx_' + Date.now(),
+          prescriptionNumber: `RX-202611-${newSeq}`,
+          patientId: selectedCon.patientId,
+          patientName: selectedCon.patientName,
+          patientIdentifier: selectedCon.patientIdentifier,
+          doctorId: 'doc_001',
+          doctorName: 'Dr. John Mensah, MD',
+          consultationId: selectedCon.consultationId,
+          prescriptionDate: new Date().toISOString(),
+          status: 'pending',
+          clinicalDiagnosis: diagnosis,
+          generalInstructions: instructions,
+          isControlledMedication: isControlled,
+          items: items.map(it => ({ ...it, quantityDispensed: 0, itemStatus: 'pending' })),
+          auditTrail: [{ modifiedAt: new Date().toISOString(), action: 'created', reason: 'Initial prescription created' }],
+          dispensingHistory: []
+        };
+        const updatedList = [newRx, ...prescriptions];
+        updatePrescriptionList(updatedList);
+        setSelectedRx(newRx);
+        setItems([]);
+        setInstructions('');
+        setTab('handoff');
+      };
+
+      // Pharmacist Dispense Update Handler
+      const handleDispenseUpdate = (e) => {
+        e.preventDefault();
+        if (!selectedRx) return;
+
+        // INVIOLABLE INTEGRITY RULE
+        if (dispenseStatusInput === 'fulfilled') {
+          const incomplete = selectedRx.items.some(item => {
+            const entered = dispenseQtyMap[item.medicineId] ?? item.quantityDispensed ?? 0;
+            return entered < item.quantityPrescribed;
+          });
+          if (incomplete) {
+            alert('Integrity Violation: Cannot mark prescription as fulfilled when one or more items have not been completely dispensed. Please choose "Partially dispensed" or "Pending backorder".');
+            return;
+          }
+        }
+
+        const updatedRx = {
+          ...selectedRx,
+          status: dispenseStatusInput,
+          items: selectedRx.items.map(item => {
+            const qty = dispenseQtyMap[item.medicineId] ?? item.quantityDispensed ?? 0;
+            return {
+              ...item,
+              quantityDispensed: qty,
+              itemStatus: qty >= item.quantityPrescribed ? 'dispensed' : qty > 0 ? 'partially_dispensed' : dispenseStatusInput === 'pending_backorder' ? 'backordered' : 'pending'
+            };
+          }),
+          dispensingHistory: [
+            ...selectedRx.dispensingHistory,
+            {
+              dispensedAt: new Date().toISOString(),
+              pharmacistName: 'Pharm. Sarah Boateng',
+              notes: dispenseNotes || 'Dispensing synchronized from Pharmacy module.'
+            }
+          ],
+          auditTrail: [
+            ...selectedRx.auditTrail,
+            { modifiedAt: new Date().toISOString(), action: 'dispense_recorded', reason: `Status transitioned to '${dispenseStatusInput}'.` }
+          ]
+        };
+
+        const updatedList = prescriptions.map(p => p._id === updatedRx._id ? updatedRx : p);
+        updatePrescriptionList(updatedList);
+        setSelectedRx(updatedRx);
+        alert(`Dispensing status updated to '${dispenseStatusInput}'.`);
+      };
+
+      // Controlled pre-dispense update
+      const handleDoctorUpdate = (reason, newInstructions) => {
+        if (!selectedRx || selectedRx.status !== 'pending') {
+          alert('Cannot modify prescription: Modifications locked after dispensing begins.');
+          return;
+        }
+        const updatedRx = {
+          ...selectedRx,
+          generalInstructions: newInstructions,
+          auditTrail: [
+            ...selectedRx.auditTrail,
+            { modifiedAt: new Date().toISOString(), action: 'updated_before_dispense', reason: reason || 'Physician modified instructions' }
+          ]
+        };
+        const updatedList = prescriptions.map(p => p._id === updatedRx._id ? updatedRx : p);
+        updatePrescriptionList(updatedList);
+        setSelectedRx(updatedRx);
+        alert('Prescription instructions updated and audit log saved.');
+      };
+
+      // Statistics
+      const stats = {
+        total: prescriptions.filter(p => p.status !== 'cancelled').length,
+        pending: prescriptions.filter(p => p.status === 'pending').length,
+        partial: prescriptions.filter(p => p.status === 'partially_dispensed').length,
+        fulfilled: prescriptions.filter(p => p.status === 'fulfilled').length,
+        backorder: prescriptions.filter(p => p.status === 'pending_backorder').length
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col">
+          {/* HEADER & SIMULATION ROLE SELECTOR */}
+          <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                  Rx
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-base font-bold text-slate-900 leading-tight">
+                      CCIS — Prescription Management
+                    </h1>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-teal-100 text-teal-800 uppercase">
+                      Module 3
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500">University Clinic Information System</p>
+                </div>
+              </div>
+
+              {/* Role Toggle Switcher */}
+              <div className="flex items-center gap-2 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs font-medium">
+                <span className="px-2 text-slate-500 font-semibold text-[11px]">Active Role:</span>
+                <button
+                  type="button"
+                  onClick={() => setRole('doctor')}
+                  className={`px-3 py-1 rounded-md transition-all ${role === 'doctor' ? 'bg-teal-600 text-white font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  Doctor (Dr. John)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('pharmacist')}
+                  className={`px-3 py-1 rounded-md transition-all ${role === 'pharmacist' ? 'bg-blue-600 text-white font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  Pharmacist (Madam Sarah)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRole('nurse')}
+                  className={`px-3 py-1 rounded-md transition-all ${role === 'nurse' ? 'bg-purple-600 text-white font-semibold shadow-xs' : 'text-slate-600 hover:text-slate-900'}`}
+                >
+                  Nurse (Grace)
+                </button>
+              </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="max-w-7xl mx-auto px-4 flex space-x-1 border-t border-slate-100 py-1 overflow-x-auto text-xs font-medium">
+              {[
+                { id: 'dashboard', label: '1. Dashboard' },
+                { id: 'create', label: '2. Create Prescription', reqDoctor: true },
+                { id: 'catalogue', label: '3. Medicine Catalogue' },
+                { id: 'details', label: '4. Prescription Details' },
+                { id: 'history', label: '5. Prescription History' },
+                { id: 'status', label: '6. Dispensing Status & Tracker' },
+                { id: 'handoff', label: '7. Submission Handoff' }
+              ].map(t => {
+                const isRestricted = t.reqDoctor && role !== 'doctor';
+                const isActive = tab === t.id;
+                return (
+                  <button
+                    key={t.id}
+                    onClick={() => !isRestricted && setTab(t.id)}
+                    disabled={isRestricted}
+                    className={`px-3 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                      isActive
+                        ? 'bg-teal-50 text-teal-800 font-bold'
+                        : isRestricted
+                        ? 'text-slate-300 cursor-not-allowed'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    {t.label} {isRestricted && '(Doctor Only)'}
+                  </button>
+                );
+              })}
+            </div>
+          </header>
+
+          {/* MAIN CONTENT AREA */}
+          <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+            {/* VIEW 1: DASHBOARD */}
+            {tab === 'dashboard' && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Clinical Prescription Dashboard</h2>
+                    <p className="text-xs text-slate-500">Overview of clinic medication orders and pharmacy fulfillment queues</p>
+                  </div>
+                  {role === 'doctor' && (
+                    <button
+                      onClick={() => setTab('create')}
+                      className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg text-xs font-semibold shadow-xs"
+                    >
+                      + Create Prescription
+                    </button>
+                  )}
+                </div>
+
+                {/* KPI Metrics */}
+                <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+                  <StatCard title="Total Orders" count={stats.total} color="teal" />
+                  <StatCard title="Pending" count={stats.pending} subtitle="Awaiting pharmacy" color="amber" />
+                  <StatCard title="Partially Dispensed" count={stats.partial} subtitle="Incomplete" color="blue" />
+                  <StatCard title="Fulfilled" count={stats.fulfilled} subtitle="Completed" color="emerald" />
+                  <StatCard title="Pending Backorder" count={stats.backorder} subtitle="Stock-out" color="purple" />
+                </div>
+
+                {/* Prescriptions Table */}
+                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+                  <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">Active Prescriptions Queue</span>
+                    <span className="text-xs text-slate-500">{prescriptions.length} records</span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[11px] font-semibold">
+                        <tr>
+                          <th className="px-4 py-3">Prescription #</th>
+                          <th className="px-4 py-3">Patient & ID</th>
+                          <th className="px-4 py-3">Doctor</th>
+                          <th className="px-4 py-3">Date</th>
+                          <th className="px-4 py-3">Items</th>
+                          <th className="px-4 py-3">Status</th>
+                          <th className="px-4 py-3 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {prescriptions.map(rx => (
+                          <tr key={rx._id} className="hover:bg-teal-50/30 transition-colors">
+                            <td className="px-4 py-3 font-mono font-bold text-teal-800">{rx.prescriptionNumber}</td>
+                            <td className="px-4 py-3">
+                              <div className="font-semibold text-slate-900">{rx.patientName}</div>
+                              <div className="text-[11px] text-slate-400 font-mono">{rx.patientIdentifier}</div>
+                            </td>
+                            <td className="px-4 py-3 text-slate-700">{rx.doctorName}</td>
+                            <td className="px-4 py-3 text-slate-500">{new Date(rx.prescriptionDate).toLocaleDateString()}</td>
+                            <td className="px-4 py-3">
+                              <span className="font-medium text-slate-800">{rx.items?.length || 0} meds</span>
+                              <div className="text-[11px] text-slate-400 truncate max-w-xs">{rx.items?.map(i => i.medicineName).join(', ')}</div>
+                            </td>
+                            <td className="px-4 py-3"><Badge status={rx.status} /></td>
+                            <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
+                              <button
+                                onClick={() => { setSelectedRx(rx); setTab('details'); }}
+                                className="px-2.5 py-1 text-xs font-medium rounded border border-slate-200 text-slate-700 hover:bg-slate-100"
+                              >
+                                Details
+                              </button>
+                              <button
+                                onClick={() => { setSelectedRx(rx); setTab('status'); }}
+                                className="px-2.5 py-1 text-xs font-medium rounded border border-teal-600 text-teal-700 hover:bg-teal-50"
+                              >
+                                Track / Dispense
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 2: CREATE PRESCRIPTION */}
+            {tab === 'create' && (
+              <div className="max-w-3xl mx-auto space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">Author Clinical Prescription</h2>
+                  <p className="text-xs text-slate-500">Connects Clinical Consultation (Module 2) to Pharmacy (Module 4)</p>
+                </div>
+
+                <form onSubmit={handleCreatePrescription} className="space-y-5">
+                  {/* Patient Consultation Card */}
+                  <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                    <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                      <span className="text-xs font-bold text-slate-700 uppercase">Consultation Queue (Module 2)</span>
+                      <select
+                        value={selectedCon.consultationId}
+                        onChange={(e) => handleConSelect(e.target.value)}
+                        className="text-xs px-2.5 py-1 border border-slate-300 rounded bg-slate-50 font-medium"
+                      >
+                        {CLINICAL_CONSULTATIONS.map(c => (
+                          <option key={c.consultationId} value={c.consultationId}>
+                            {c.patientName} ({c.patientIdentifier})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                      <div><span className="text-slate-400 block">Patient Name:</span><strong>{selectedCon.patientName}</strong></div>
+                      <div><span className="text-slate-400 block">ID:</span><span className="font-mono">{selectedCon.patientIdentifier}</span></div>
+                      <div><span className="text-slate-400 block">Demographics:</span>{selectedCon.age} yrs • {selectedCon.gender}</div>
+                      <div><span className="text-slate-400 block">Consultation ID:</span><span className="font-mono">{selectedCon.consultationId}</span></div>
+                    </div>
+
+                    {selectedCon.allergies && (
+                      <div className="p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900 font-medium flex items-center gap-2">
+                        <span>⚠️ <strong>Known Drug Allergies:</strong> {selectedCon.allergies.join(', ')}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Diagnosis */}
+                  <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                    <label className="block text-xs font-bold text-slate-700">Clinical Diagnosis *</label>
+                    <input
+                      type="text"
+                      value={diagnosis}
+                      onChange={(e) => setDiagnosis(e.target.value)}
+                      className="w-full px-3 py-2 border border-slate-300 rounded text-xs"
+                      required
+                    />
+                  </div>
+
+                  {/* Medicines Selection */}
+                  <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                    <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                      <span className="text-xs font-bold text-slate-700 uppercase">Prescribed Medicines ({items.length})</span>
+                      <button
+                        type="button"
+                        onClick={() => setIsModalOpen(true)}
+                        className="px-3 py-1.5 border border-teal-600 text-teal-700 hover:bg-teal-50 rounded text-xs font-semibold"
+                      >
+                        + Select from Shared Catalogue
+                      </button>
+                    </div>
+
+                    {items.length === 0 ? (
+                      <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-lg text-xs text-slate-500">
+                        No medicines added yet. Click "+ Select from Shared Catalogue" above to choose approved medicines.
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {items.map((it, idx) => (
+                          <div key={idx} className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2 text-xs">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <span className="font-bold text-slate-900">{it.medicineName}</span>{' '}
+                                <span className="text-slate-500">({it.strength}, {it.form})</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setItems(items.filter((_, i) => i !== idx))}
+                                className="text-rose-600 hover:text-rose-800 text-[11px] font-bold"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              <div>
+                                <label className="text-[10px] text-slate-500 block">Dosage</label>
+                                <input
+                                  type="text"
+                                  value={it.dosage}
+                                  onChange={(e) => {
+                                    const upd = [...items];
+                                    upd[idx].dosage = e.target.value;
+                                    setItems(upd);
+                                  }}
+                                  className="w-full p-1 border rounded bg-white text-xs"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] text-slate-500 block">Frequency</label>
+                                <select
+                                  value={it.frequency}
+                                  onChange={(e) => {
+                                    const upd = [...items];
+                                    upd[idx].frequency = e.target.value;
+                                    setItems(upd);
+                                  }}
+                                  className="w-full p-1 border rounded bg-white text-xs"
+                                >
+                                  <option value="Once daily (OD)">Once daily (OD)</option>
+                                  <option value="Twice daily (BD)">Twice daily (BD)</option>
+                                  <option value="Three times daily (TDS)">Three times daily (TDS)</option>
+                                  <option value="Four times daily (QDS)">Four times daily (QDS)</option>
+                                  <option value="As needed / PRN">As needed / PRN</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="text-[10px] text-slate-500 block">Duration</label>
+                                <input
+                                  type="text"
+                                  value={it.duration}
+                                  onChange={(e) => {
+                                    const upd = [...items];
+                                    upd[idx].duration = e.target.value;
+                                    setItems(upd);
+                                  }}
+                                  className="w-full p-1 border rounded bg-white text-xs"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[10px] text-slate-500 block">Qty Prescribed</label>
+                                <input
+                                  type="number"
+                                  min="1"
+                                  value={it.quantityPrescribed}
+                                  onChange={(e) => {
+                                    const upd = [...items];
+                                    upd[idx].quantityPrescribed = parseInt(e.target.value, 10) || 1;
+                                    setItems(upd);
+                                  }}
+                                  className="w-full p-1 border rounded bg-white text-xs"
+                                  required
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Advice & Submit */}
+                  <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs space-y-3">
+                    <label className="block text-xs font-bold text-slate-700">General Patient Instructions</label>
+                    <textarea
+                      rows="2"
+                      value={instructions}
+                      onChange={(e) => setInstructions(e.target.value)}
+                      placeholder="e.g. Drink plenty of warm water. Complete full course."
+                      className="w-full p-2 border border-slate-300 rounded text-xs"
+                    />
+
+                    <div className="flex justify-end gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setTab('dashboard')}
+                        className="px-4 py-2 border border-slate-300 text-slate-700 rounded text-xs font-medium hover:bg-slate-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={items.length === 0}
+                        className="px-5 py-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white rounded text-xs font-bold shadow-xs"
+                      >
+                        Authorize & Submit to Pharmacy →
+                      </button>
+                    </div>
+                  </div>
+                </form>
+
+                {/* MODAL: Medicine Catalogue */}
+                {isModalOpen && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+                    <div className="bg-white rounded-xl shadow-xl border border-slate-200 max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto space-y-4">
+                      <div className="flex justify-between items-center border-b pb-2">
+                        <h3 className="font-bold text-slate-900 text-sm">Select Approved Medicine (Module 4 Catalogue)</h3>
+                        <button onClick={() => setIsModalOpen(false)} className="text-slate-400 font-bold hover:text-slate-600">✕</button>
+                      </div>
+                      <div className="divide-y divide-slate-100 text-xs">
+                        {INITIAL_MEDICINE_CATALOGUE.map(m => {
+                          const isOut = m.currentStock <= 0;
+                          return (
+                            <div key={m._id} className="py-3 flex justify-between items-center hover:bg-slate-50 px-2 rounded">
+                              <div>
+                                <div className="font-bold text-slate-900">{m.name} ({m.strength}, {m.form})</div>
+                                <div className="text-[11px] text-slate-500">{m.genericName} • Stock: <strong className={isOut ? 'text-rose-600' : 'text-emerald-700'}>{m.currentStock} units</strong></div>
+                              </div>
+                              <button
+                                type="button"
+                                disabled={isOut}
+                                onClick={() => handleAddMedicine(m)}
+                                className={`px-3 py-1 rounded text-xs font-semibold ${isOut ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700 text-white'}`}
+                              >
+                                {isOut ? 'Stock-Out' : 'Select'}
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* VIEW 3: MEDICINE CATALOGUE */}
+            {tab === 'catalogue' && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">Shared Pharmacy Medicine Catalogue</h2>
+                  <p className="text-xs text-slate-500">Live medicine inventory data managed by Module 4 (Pharmacy & Inventory)</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {INITIAL_MEDICINE_CATALOGUE.map(m => (
+                    <div key={m._id} className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="font-mono text-[10px] text-slate-400">{m.code}</span>
+                            <h4 className="font-bold text-slate-900 text-sm mt-0.5">{m.name}</h4>
+                            <p className="text-xs text-slate-500">{m.genericName}</p>
+                          </div>
+                          {m.currentStock > 20 ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">In Stock</span>
+                          ) : m.currentStock > 0 ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Low Stock</span>
+                          ) : (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Stock-Out</span>
+                          )}
+                        </div>
+                        <div className="mt-4 pt-3 border-t grid grid-cols-2 gap-2 text-xs">
+                          <div><span className="text-slate-400 block text-[11px]">Strength:</span><strong>{m.strength}</strong></div>
+                          <div><span className="text-slate-400 block text-[11px]">Form:</span><strong>{m.form}</strong></div>
+                          <div><span className="text-slate-400 block text-[11px]">Category:</span>{m.category}</div>
+                          <div><span className="text-slate-400 block text-[11px]">Available:</span><strong>{m.currentStock} {m.unitOfMeasure}s</strong></div>
+                        </div>
+                      </div>
+                      {role === 'doctor' && (
+                        <div className="mt-4 pt-3 border-t">
+                          <button
+                            onClick={() => { handleAddMedicine(m); setTab('create'); }}
+                            disabled={m.currentStock <= 0}
+                            className="w-full py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 rounded text-xs font-semibold disabled:opacity-50"
+                          >
+                            Prescribe This Medicine
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 4: PRESCRIPTION DETAILS & OFFICIAL RECORD */}
+            {tab === 'details' && selectedRx && (
+              <div className="max-w-3xl mx-auto space-y-6">
+                <div className="flex justify-between items-center">
+                  <button onClick={() => setTab('dashboard')} className="text-xs text-slate-600 hover:text-slate-900 font-semibold">← Back to Dashboard</button>
+                  <div className="space-x-2">
+                    <button onClick={() => window.print()} className="px-3 py-1.5 border border-slate-300 rounded text-xs font-medium hover:bg-slate-50">Print Official Rx</button>
+                    <button onClick={() => setTab('status')} className="px-3 py-1.5 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-semibold">Track Dispensing</button>
+                  </div>
+                </div>
+
+                {/* Printable RX Document */}
+                <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-xs space-y-6 printable-area">
+                  <div className="flex justify-between items-start border-b-2 border-teal-700 pb-4">
+                    <div>
+                      <h1 className="text-base font-bold text-slate-900">UNIVERSITY HEALTH SERVICES</h1>
+                      <p className="text-xs text-slate-500">Centralized Clinic Information System (CCIS)</p>
+                      <p className="text-[11px] text-slate-400">Prescription Record</p>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-mono font-bold text-teal-800 text-sm">{selectedRx.prescriptionNumber}</div>
+                      <div className="text-xs text-slate-500">Date: {new Date(selectedRx.prescriptionDate).toLocaleDateString()}</div>
+                      <div className="mt-1"><Badge status={selectedRx.status} /></div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 p-4 rounded-lg border text-xs">
+                    <div><span className="text-slate-400 block">Patient:</span><strong>{selectedRx.patientName}</strong> ({selectedRx.patientIdentifier})</div>
+                    <div><span className="text-slate-400 block">Prescribing Doctor:</span><strong>{selectedRx.doctorName}</strong></div>
+                    <div><span className="text-slate-400 block">Diagnosis:</span><strong>{selectedRx.clinicalDiagnosis || 'N/A'}</strong></div>
+                  </div>
+
+                  {/* Medications Schedule */}
+                  <div>
+                    <h4 className="text-xs font-bold uppercase text-slate-700 mb-2">Prescribed Medications</h4>
+                    <table className="w-full text-left text-xs border border-slate-200 rounded">
+                      <thead className="bg-slate-50 border-b text-[11px] font-semibold text-slate-600">
+                        <tr>
+                          <th className="p-3">Medication</th>
+                          <th className="p-3">Dosage & Frequency</th>
+                          <th className="p-3">Duration</th>
+                          <th className="p-3">Qty</th>
+                          <th className="p-3">Instructions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {selectedRx.items?.map((it, idx) => (
+                          <tr key={idx}>
+                            <td className="p-3 font-bold text-slate-900">{it.medicineName} ({it.strength})</td>
+                            <td className="p-3">{it.dosage} • <span className="font-semibold text-teal-700">{it.frequency}</span></td>
+                            <td className="p-3">{it.duration}</td>
+                            <td className="p-3 font-mono font-bold">{it.quantityPrescribed}</td>
+                            <td className="p-3 text-slate-600 italic">{it.instructions}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {selectedRx.generalInstructions && (
+                    <div className="p-3 bg-teal-50 border border-teal-100 rounded text-xs">
+                      <strong>Physician Advice:</strong> {selectedRx.generalInstructions}
+                    </div>
+                  )}
+
+                  {/* Controlled Pre-Dispense Edits */}
+                  {role === 'doctor' && selectedRx.status === 'pending' && (
+                    <div className="pt-4 border-t flex justify-between items-center text-xs">
+                      <span className="text-emerald-700 font-medium">● Status is Pending: Controlled updates permitted.</span>
+                      <button
+                        onClick={() => {
+                          const r = prompt('Enter clinical reason for modification:');
+                          if (r) {
+                            const ins = prompt('Enter updated patient instructions:', selectedRx.generalInstructions);
+                            handleDoctorUpdate(r, ins);
+                          }
+                        }}
+                        className="px-3 py-1 border border-teal-600 text-teal-700 rounded text-xs font-semibold hover:bg-teal-50"
+                      >
+                        Edit Instructions (Audit Logged)
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Audit Trail */}
+                  {selectedRx.auditTrail?.length > 0 && (
+                    <div className="pt-4 border-t space-y-1.5 text-[11px] text-slate-500">
+                      <strong className="block text-slate-700">Audit History:</strong>
+                      {selectedRx.auditTrail.map((a, i) => (
+                        <div key={i} className="flex justify-between bg-slate-50 p-2 rounded">
+                          <span>• <strong className="text-slate-800 capitalize">{a.action}</strong>: {a.reason}</span>
+                          <span className="font-mono text-[10px]">{new Date(a.modifiedAt).toLocaleTimeString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 5: PRESCRIPTION HISTORY */}
+            {tab === 'history' && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">Clinical Prescription History & Archive</h2>
+                  <p className="text-xs text-slate-500">Searchable historical log across all university clinic encounters</p>
+                </div>
+                <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-xs">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase text-[11px] font-semibold">
+                      <tr>
+                        <th className="px-4 py-3">Prescription ID</th>
+                        <th className="px-4 py-3">Patient</th>
+                        <th className="px-4 py-3">Doctor</th>
+                        <th className="px-4 py-3">Date</th>
+                        <th className="px-4 py-3">Medications</th>
+                        <th className="px-4 py-3">Status</th>
+                        <th className="px-4 py-3 text-right">View</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {prescriptions.map(rx => (
+                        <tr key={rx._id} className="hover:bg-slate-50">
+                          <td className="px-4 py-3 font-mono font-bold text-teal-800">{rx.prescriptionNumber}</td>
+                          <td className="px-4 py-3"><strong>{rx.patientName}</strong> ({rx.patientIdentifier})</td>
+                          <td className="px-4 py-3">{rx.doctorName}</td>
+                          <td className="px-4 py-3">{new Date(rx.prescriptionDate).toLocaleDateString()}</td>
+                          <td className="px-4 py-3 text-slate-600">{rx.items?.map(i => i.medicineName).join(', ')}</td>
+                          <td className="px-4 py-3"><Badge status={rx.status} /></td>
+                          <td className="px-4 py-3 text-right">
+                            <button
+                              onClick={() => { setSelectedRx(rx); setTab('details'); }}
+                              className="px-2.5 py-1 text-xs border rounded hover:bg-slate-100 font-medium"
+                            >
+                              Inspect
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 6: DISPENSING STATUS TRACKER & PHARMACY RECONCILIATION */}
+            {tab === 'status' && selectedRx && (
+              <div className="max-w-3xl mx-auto space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-900">Dispensing Status & Pharmacy Reconciliation</h2>
+                  <p className="text-xs text-slate-500">Live synchronization with Module 4 (Pharmacy & Inventory)</p>
+                </div>
+
+                {/* Status Stepper Card */}
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-sm">{selectedRx.prescriptionNumber}</h3>
+                      <p className="text-xs text-slate-500">{selectedRx.patientName} ({selectedRx.patientIdentifier})</p>
+                    </div>
+                    <Badge status={selectedRx.status} />
+                  </div>
+
+                  {/* Progress Checklist */}
+                  <div className="border rounded-lg overflow-hidden text-xs">
+                    <table className="w-full text-left">
+                      <thead className="bg-slate-50 border-b font-semibold text-slate-600">
+                        <tr>
+                          <th className="p-3">Medication</th>
+                          <th className="p-3">Prescribed</th>
+                          <th className="p-3">Dispensed</th>
+                          <th className="p-3">Item Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100">
+                        {selectedRx.items?.map((it, idx) => (
+                          <tr key={idx}>
+                            <td className="p-3 font-bold text-slate-900">{it.medicineName} ({it.strength})</td>
+                            <td className="p-3 font-medium">{it.quantityPrescribed} units</td>
+                            <td className="p-3 font-bold text-teal-800">{it.quantityDispensed || 0} units</td>
+                            <td className="p-3"><Badge status={it.itemStatus || 'pending'} size="sm" /></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Pharmacist Action Simulation Panel */}
+                <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-xs space-y-4">
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <span className="text-xs font-bold text-blue-800 uppercase">Pharmacy Dispensing Action Interface (Madam Sarah)</span>
+                    <span className="text-[11px] text-blue-700 bg-blue-50 px-2 py-0.5 rounded font-semibold">Active: {role === 'pharmacist' ? 'Pharmacist' : 'View Mode'}</span>
+                  </div>
+
+                  {role !== 'pharmacist' ? (
+                    <div className="p-4 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900">
+                      ℹ️ Switch your simulation role to <strong>"Pharmacist (Madam Sarah)"</strong> in the top navbar to record dispensed quantities.
+                    </div>
+                  ) : (
+                    <form onSubmit={handleDispenseUpdate} className="space-y-4 text-xs">
+                      <div className="space-y-2">
+                        <label className="font-bold text-slate-700 block">Record Dispensed Quantities:</label>
+                        {selectedRx.items?.map(it => (
+                          <div key={it.medicineId} className="p-3 bg-slate-50 border rounded flex justify-between items-center">
+                            <div>
+                              <strong className="text-slate-900">{it.medicineName}</strong>
+                              <span className="text-slate-500 text-[11px] block">Prescribed: {it.quantityPrescribed} units</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span>Dispensed Qty:</span>
+                              <input
+                                type="number"
+                                min="0"
+                                max={it.quantityPrescribed}
+                                defaultValue={it.quantityDispensed || 0}
+                                onChange={(e) => setDispenseQtyMap({ ...dispenseQtyMap, [it.medicineId]: parseInt(e.target.value, 10) || 0 })}
+                                className="w-20 p-1 border rounded bg-white font-bold text-center"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        <div>
+                          <label className="font-bold text-slate-700 block mb-1">Overall Status *</label>
+                          <select
+                            value={dispenseStatusInput}
+                            onChange={(e) => setDispenseStatusInput(e.target.value)}
+                            className="w-full p-2 border rounded bg-white text-xs"
+                          >
+                            <option value="pending">Pending</option>
+                            <option value="partially_dispensed">Partially dispensed</option>
+                            <option value="fulfilled">Fulfilled</option>
+                            <option value="pending_backorder">Pending backorder</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="font-bold text-slate-700 block mb-1">Pharmacist Notes</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Amoxicillin dispensed with counseling."
+                            value={dispenseNotes}
+                            onChange={(e) => setDispenseNotes(e.target.value)}
+                            className="w-full p-2 border rounded bg-white text-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-2">
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-xs shadow-xs"
+                        >
+                          Transmit Dispense Status to Prescription Module
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* VIEW 7: PRESCRIPTION SUBMISSION / HANDOFF */}
+            {tab === 'handoff' && selectedRx && (
+              <div className="max-w-xl mx-auto py-8 space-y-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-2xl font-bold">
+                  ✓
+                </div>
+                <div>
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                    Handoff Confirmed & Transmitted
+                  </span>
+                  <h2 className="text-2xl font-bold text-slate-900 mt-2">Prescription Sent to Pharmacy</h2>
+                  <p className="text-xs text-slate-500 mt-1">Prescription is now active in Madam Sarah's dispensing queue.</p>
+                </div>
+
+                <div className="bg-white p-5 rounded-xl border border-slate-200 text-left text-xs space-y-2 max-w-md mx-auto shadow-xs">
+                  <div className="flex justify-between border-b pb-2">
+                    <span className="text-slate-500">Prescription Tracking ID:</span>
+                    <strong className="font-mono text-teal-800">{selectedRx.prescriptionNumber}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Patient:</span>
+                    <strong>{selectedRx.patientName} ({selectedRx.patientIdentifier})</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Prescribed By:</span>
+                    <span>{selectedRx.doctorName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Initial Status:</span>
+                    <Badge status={selectedRx.status} size="sm" />
+                  </div>
+                </div>
+
+                <div className="flex justify-center gap-3">
+                  <button onClick={() => setTab('dashboard')} className="px-4 py-2 border rounded text-xs font-medium hover:bg-slate-50">Dashboard</button>
+                  <button onClick={() => setTab('details')} className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded text-xs font-bold">Print / Inspect Rx</button>
+                </div>
+              </div>
+            )}
+          </main>
+
+          {/* FOOTER */}
+          <footer className="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-500">
+            Centralized Clinic Information System (CCIS) • Module 3: Prescription Management
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
