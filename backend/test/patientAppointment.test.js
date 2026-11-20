@@ -5,6 +5,10 @@ const { createApp } = require("../src/app");
 const Patient = require("../src/models/Patient");
 const Appointment = require("../src/models/Appointment");
 
+jest.setTimeout(120000);
+process.env.MONGOMS_DOWNLOAD_TIMEOUT = "120000";
+process.env.MONGOMS_STARTUP_TIMEOUT = "120000";
+
 let mongo;
 let app;
 let startsAt;
@@ -70,7 +74,9 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await mongoose.disconnect();
-  await mongo.stop();
+  if (mongo) {
+    await mongo.stop();
+  }
 });
 
 describe("patient and appointment API", () => {
