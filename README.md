@@ -1,6 +1,10 @@
 # Patient and Appointment Management
 
-A full-stack web application for patient profiles and appointment scheduling.
+Development of a Centralized Clinic Information System (CCIS) using the MERN stack to manage patient registration, appointments, clinical records, prescriptions, and pharmacy inventory.
+
+## Patient and Appointment Module
+
+This module provides patient profiles and appointment scheduling.
 
 ## Structure
 
