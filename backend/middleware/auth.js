@@ -2,8 +2,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/shared/User');
 
 /**
- * Authentication Middleware
- * Validates JWT token from the shared CCIS authentication system.
+ * Unified CCIS Authentication Middleware
+ * Validates JWT Bearer tokens for all modules.
+ * Populates req.user with { _id, id, username, role, firstName, lastName, email, title, name }.
  */
 const authenticateToken = async (req, res, next) => {
   try {
@@ -23,7 +24,6 @@ const authenticateToken = async (req, res, next) => {
 
     const decoded = jwt.verify(token, secret);
 
-    // If decoded payload has user ID, populate user context
     const userId = decoded.id || decoded.userId || decoded._id;
     if (!userId) {
       return res.status(401).json({
@@ -35,15 +35,19 @@ const authenticateToken = async (req, res, next) => {
       });
     }
 
-    // Attach verified user info
+    // Attach verified user info (compatible with all modules)
     req.user = {
       _id: userId,
       id: userId,
-      username: decoded.username,
+      username: decoded.username || decoded.email || 'user',
       role: decoded.role || 'doctor',
       firstName: decoded.firstName || 'Authorized',
       lastName: decoded.lastName || 'Staff',
-      email: decoded.email,
+      title: decoded.title || (decoded.role === 'doctor' ? 'Dr.' : ''),
+      email: decoded.email || '',
+      name: decoded.name || `${decoded.firstName || 'Authorized'} ${decoded.lastName || 'Staff'}`,
+      specialization: decoded.specialization || 'General Practice',
+      medicalLicenseNumber: decoded.medicalLicenseNumber || '',
     };
 
     next();
@@ -71,7 +75,6 @@ const authenticateToken = async (req, res, next) => {
 /**
  * Role-Based Access Control (RBAC) Middleware
  * Restricts route access to specified clinic roles.
- * E.g. authorizeRoles('doctor', 'admin')
  */
 const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
@@ -93,7 +96,7 @@ const authorizeRoles = (...allowedRoles) => {
         success: false,
         error: {
           code: 'FORBIDDEN_INSUFFICIENT_PERMISSIONS',
-          message: `Access denied. Role '${req.user.role}' is not authorized to access this clinical resource.`,
+          message: `Access denied. Role '${req.user.role}' is not authorized for this resource.`,
           requiredRoles: allowedRoles,
         },
       });
@@ -103,8 +106,29 @@ const authorizeRoles = (...allowedRoles) => {
   };
 };
 
+/**
+ * Module 1 compatible requireRole middleware
+ */
+const requireRole = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHENTICATED', message: 'Sign-in is required.' },
+      });
+    }
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: 'You do not have permission to perform this action.' },
+      });
+    }
+    return next();
+  };
+};
+
 module.exports = {
   authenticateToken,
   authorizeRoles,
+  requireRole,
 };
-

@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 /**
- * Shared User Reference Model (Doctors, Nurses, Clinic Administrators)
- * Managed through central authentication & JWT verification.
+ * Unified CCIS User Model
+ * Supports doctors, patients, receptionists, pharmacists, nurses, and administrators.
  */
 const userSchema = new mongoose.Schema(
   {
@@ -25,12 +26,12 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['doctor', 'nurse', 'pharmacist', 'admin', 'receptionist'],
+      enum: ['doctor', 'nurse', 'pharmacist', 'admin', 'receptionist', 'patient'],
       required: true,
       default: 'doctor',
     },
     title: {
-      type: String, // Dr., Prof., Nurse
+      type: String,
       default: 'Dr.',
     },
     firstName: {
@@ -44,7 +45,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     specialization: {
-      type: String, // General Medicine, Internal Medicine, Pediatrics
+      type: String,
       default: 'General Practice',
     },
     medicalLicenseNumber: {
@@ -62,17 +63,30 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    virtuals: {
-      fullName: {
-        get() {
-          return `${this.title} ${this.firstName} ${this.lastName}`;
-        },
-      },
-    },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );
 
-module.exports = mongoose.models.User || mongoose.model('User', userSchema);
+userSchema.virtual('fullName').get(function () {
+  return `${this.title ? this.title + ' ' : ''}${this.firstName} ${this.lastName}`.trim();
+});
 
+// Hash password before saving if modified
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+const User = mongoose.models.User || mongoose.model('User', userSchema);
+module.exports = User;

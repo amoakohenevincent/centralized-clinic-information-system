@@ -22,9 +22,9 @@ export const AuthProvider = ({ children }) => {
     const updatedUser = {
       ...currentUser,
       role: newRole,
-      title: newRole === 'doctor' ? 'Dr.' : newRole === 'nurse' ? 'Nurse' : 'Admin',
-      firstName: newRole === 'doctor' ? 'Sarah' : newRole === 'nurse' ? 'Emily' : 'James',
-      lastName: newRole === 'doctor' ? 'Jenkins' : newRole === 'nurse' ? 'Taylor' : 'Wilson',
+      title: newRole === 'doctor' ? 'Dr.' : newRole === 'nurse' ? 'Nurse' : newRole === 'pharmacist' ? '' : 'Admin',
+      firstName: newRole === 'doctor' ? 'Sarah' : newRole === 'nurse' ? 'Emily' : newRole === 'pharmacist' ? 'John' : 'James',
+      lastName: newRole === 'doctor' ? 'Jenkins' : newRole === 'nurse' ? 'Taylor' : newRole === 'pharmacist' ? 'Patel' : 'Wilson',
     };
     setCurrentUser(updatedUser);
   };
@@ -32,17 +32,20 @@ export const AuthProvider = ({ children }) => {
   const isDoctor = currentUser?.role === 'doctor';
   const isNurse = currentUser?.role === 'nurse';
   const isAdmin = currentUser?.role === 'admin';
+  const isPharmacist = currentUser?.role === 'pharmacist';
 
   return (
     <AuthContext.Provider
       value={{
         currentUser,
+        user: currentUser, // alias for unified navbar
         setCurrentUser,
         token,
         setToken,
         isDoctor,
         isNurse,
         isAdmin,
+        isPharmacist,
         switchRole,
       }}
     >
@@ -52,4 +55,3 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-
