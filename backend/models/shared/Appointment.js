@@ -50,6 +50,13 @@ const appointmentSchema = new mongoose.Schema(
     },
     endsAt: {
       type: Date,
+      validate: {
+        validator(value) {
+          if (!value || !this.startsAt) return true;
+          return value > this.startsAt;
+        },
+        message: 'Appointment end time must be after its start time.',
+      },
     },
     appointmentType: {
       type: String,
@@ -117,6 +124,16 @@ appointmentSchema.pre('validate', function () {
     this.endsAt = new Date(this.startsAt.getTime() + 30 * 60000);
   }
 });
+
+const ACTIVE_STATUSES = ['booked', 'checked_in', 'in_consultation', 'scheduled', 'checked-in', 'in-consultation'];
+
+appointmentSchema.index(
+  { doctorId: 1, startsAt: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: { $in: ACTIVE_STATUSES } },
+  }
+);
 
 const Appointment = mongoose.models.Appointment || mongoose.model('Appointment', appointmentSchema);
 module.exports = Appointment;

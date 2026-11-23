@@ -1,7 +1,7 @@
-const Patient = require("../../models/shared/Patient");
+const Patient = require("../models/Patient");
 const { ApiError } = require("../errors");
 
-const PROFILE_FIELDS = ["legalName", "preferredName", "dateOfBirth", "phone", "address", "emergencyContact", "firstName", "lastName", "phoneNumber", "email", "gender", "bloodGroup", "universityId", "patientType", "department"];
+const PROFILE_FIELDS = ["legalName", "preferredName", "dateOfBirth", "phone", "address", "emergencyContact"];
 const SELF_EDITABLE_FIELDS = ["preferredName", "phone", "address", "emergencyContact"];
 
 function pick(source, fields) {
@@ -45,20 +45,17 @@ async function search(query) {
   return Patient.find({
     $or: [
       { patientNumber: new RegExp(escaped, "i") },
-      { patientId: new RegExp(escaped, "i") },
-      { universityId: new RegExp(escaped, "i") },
       { legalName: new RegExp(escaped, "i") },
-      { firstName: new RegExp(escaped, "i") },
-      { lastName: new RegExp(escaped, "i") },
-      { phone: new RegExp(escaped, "i") },
-      { phoneNumber: new RegExp(escaped, "i") },
+      { phone: new RegExp(escaped, "i") }
     ]
-  }).sort({ legalName: 1 })
+  }).select("patientNumber legalName preferredName dateOfBirth phone")
+    .sort({ legalName: 1 })
     .limit(25);
 }
 
 async function getById(id) {
-  const patient = await Patient.findById(id);
+  const patient = await Patient.findById(id)
+    .select("patientNumber legalName preferredName dateOfBirth phone");
   if (!patient) throw new ApiError(404, "PATIENT_NOT_FOUND", "Patient profile was not found.");
   return patient;
 }

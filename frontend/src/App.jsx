@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, NavLink, useNavigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import DoctorNavbar from './components/navigation/DoctorNavbar';
 
-// ─── Module 2: Clinical Records Pages (Your Code) ───
+// ─── Module 2: Clinical Records Pages (Your Foundation) ───
 import DoctorDashboard from './pages/DoctorDashboard';
 import AppointmentList from './pages/AppointmentList';
 import PatientSearch from './pages/PatientSearch';
@@ -12,7 +13,7 @@ import DiagnosisForm from './pages/DiagnosisForm';
 import ConsultationDetails from './pages/ConsultationDetails';
 import ConsultationHistory from './pages/ConsultationHistory';
 
-// ─── Module 3: Prescription Management Pages (Team Member's Code) ───
+// ─── Module 3: Prescription Management Pages (Team Module) ───
 import { PrescriptionDashboard } from './pages/PrescriptionDashboard';
 import { CreatePrescription } from './pages/CreatePrescription';
 import { MedicineSelectionView } from './pages/MedicineSelectionView';
@@ -21,100 +22,12 @@ import { PrescriptionHistory } from './pages/PrescriptionHistory';
 import { PrescriptionStatusTracker } from './pages/PrescriptionStatusTracker';
 import { PrescriptionHandoff } from './pages/PrescriptionHandoff';
 
-// ─── Unified Navigation Bar ───
-function UnifiedNavbar() {
-  const { user } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+// ─── Module 1: Patient & Appointment Pages (Team Module) ───
+import DailySchedule from './pages/DailySchedule';
+import WalkInRegistration from './pages/WalkInRegistration';
+import PatientPortal from './pages/PatientPortal';
 
-  const navLinkClasses = ({ isActive }) =>
-    `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-      isActive
-        ? 'bg-indigo-100 text-indigo-700'
-        : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-100'
-    }`;
-
-  return (
-    <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <NavLink to="/doctor/dashboard" className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm">
-              CC
-            </div>
-            <div>
-              <p className="text-sm font-bold text-slate-900">CCIS</p>
-              <p className="text-[10px] text-slate-500 leading-tight">Centralized Clinic IS</p>
-            </div>
-          </NavLink>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-1">
-            {/* Module 2: Clinical */}
-            <div className="flex items-center gap-1 border-r border-slate-200 pr-3 mr-3">
-              <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mr-1">Clinical</span>
-              <NavLink to="/doctor/dashboard" className={navLinkClasses}>Dashboard</NavLink>
-              <NavLink to="/doctor/appointments" className={navLinkClasses}>Queue</NavLink>
-              <NavLink to="/doctor/patients" className={navLinkClasses}>Patients</NavLink>
-              <NavLink to="/doctor/consultations/history" className={navLinkClasses}>History</NavLink>
-            </div>
-
-            {/* Module 3: Prescriptions */}
-            <div className="flex items-center gap-1">
-              <span className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mr-1">Rx</span>
-              <NavLink to="/prescriptions" className={navLinkClasses}>Rx Dashboard</NavLink>
-              <NavLink to="/prescriptions/create" className={navLinkClasses}>New Rx</NavLink>
-              <NavLink to="/prescriptions/history" className={navLinkClasses}>Rx History</NavLink>
-              <NavLink to="/prescriptions/catalogue" className={navLinkClasses}>Catalogue</NavLink>
-            </div>
-          </nav>
-
-          {/* User Info */}
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:block text-right">
-              <p className="text-sm font-semibold text-slate-700">
-                {user?.title || 'Dr.'} {user?.firstName || 'User'} {user?.lastName || ''}
-              </p>
-              <p className="text-[11px] text-slate-500 capitalize">{user?.role || 'doctor'}</p>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
-              {(user?.firstName?.[0] || 'U')}{(user?.lastName?.[0] || '')}
-            </div>
-
-            {/* Mobile menu toggle */}
-            <button
-              className="md:hidden p-2 text-slate-500 hover:text-slate-700"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <nav className="md:hidden pb-4 space-y-1">
-            <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold px-3 pt-2">Clinical Records</p>
-            <NavLink to="/doctor/dashboard" className={navLinkClasses} onClick={() => setMobileMenuOpen(false)}>Dashboard</NavLink>
-            <NavLink to="/doctor/appointments" className={navLinkClasses} onClick={() => setMobileMenuOpen(false)}>Queue</NavLink>
-            <NavLink to="/doctor/patients" className={navLinkClasses} onClick={() => setMobileMenuOpen(false)}>Patients</NavLink>
-            <NavLink to="/doctor/consultations/history" className={navLinkClasses} onClick={() => setMobileMenuOpen(false)}>History</NavLink>
-
-            <p className="text-[10px] uppercase tracking-wider text-slate-400 font-semibold px-3 pt-3">Prescriptions</p>
-            <NavLink to="/prescriptions" className={navLinkClasses} onClick={() => setMobileMenuOpen(false)}>Rx Dashboard</NavLink>
-            <NavLink to="/prescriptions/create" className={navLinkClasses} onClick={() => setMobileMenuOpen(false)}>New Rx</NavLink>
-            <NavLink to="/prescriptions/history" className={navLinkClasses} onClick={() => setMobileMenuOpen(false)}>Rx History</NavLink>
-            <NavLink to="/prescriptions/catalogue" className={navLinkClasses} onClick={() => setMobileMenuOpen(false)}>Catalogue</NavLink>
-          </nav>
-        )}
-      </div>
-    </header>
-  );
-}
-
-// ─── Prescription Module Wrapper (tab-based pages need adapter) ───
+// ─── Prescription Module Sub-Router Wrapper ───
 function PrescriptionModule() {
   const [selectedPrescription, setSelectedPrescription] = useState(null);
   const navigate = useNavigate();
@@ -206,19 +119,19 @@ function PrescriptionModule() {
   );
 }
 
-// ─── Main App ───
+// ─── Main CCIS Application ───
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-          <UnifiedNavbar />
+        <div className="min-h-screen bg-[#fbfbfa] flex flex-col font-sans text-[#191919]">
+          <DoctorNavbar />
           <main className="flex-1 pb-16">
             <Routes>
-              {/* Default Redirect */}
+              {/* Default Redirect to Doctor Dashboard */}
               <Route path="/" element={<Navigate to="/doctor/dashboard" replace />} />
 
-              {/* Module 2: Clinical Records */}
+              {/* Module 2: Clinical Records (Foundation) */}
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
               <Route path="/doctor/appointments" element={<AppointmentList />} />
               <Route path="/doctor/patients" element={<PatientSearch />} />
@@ -231,20 +144,25 @@ function App() {
               {/* Module 3: Prescription Management */}
               <Route path="/prescriptions/*" element={<PrescriptionModule />} />
 
+              {/* Module 1: Patient & Appointment Operations */}
+              <Route path="/reception/schedule" element={<DailySchedule />} />
+              <Route path="/reception/walk-in" element={<WalkInRegistration />} />
+              <Route path="/patient/portal" element={<PatientPortal />} />
+
               {/* Catch-all */}
               <Route path="*" element={<Navigate to="/doctor/dashboard" replace />} />
             </Routes>
           </main>
 
           {/* Unified Footer */}
-          <footer className="bg-white border-t border-slate-200 py-4 mt-auto">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+          <footer className="bg-white border-t border-[#e9e9e7] py-4 mt-auto">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-[#787774] gap-2">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>Centralized Clinic Information System (CCIS)</span>
+                <span className="w-2 h-2 bg-[#2b784c]" />
+                <span className="font-semibold text-[#191919]">Centralized Clinic Information System (CCIS)</span>
               </div>
-              <div>
-                Module 1: Patients & Appointments · Module 2: Clinical Records · Module 3: Prescriptions
+              <div className="text-[11px]">
+                Module 1: Patients & Appointments · Module 2: Clinical Records · Module 3: Prescriptions · Module 4: Pharmacy
               </div>
             </div>
           </footer>

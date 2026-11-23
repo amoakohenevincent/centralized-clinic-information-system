@@ -30,12 +30,12 @@ const getDashboardStats = async (req, res, next) => {
       // 2. Upcoming appointments beyond today
       Appointment.countDocuments({
         appointmentDate: { $gt: endOfToday },
-        status: { $in: ['scheduled', 'checked-in'] },
+        status: { $in: ['scheduled', 'booked', 'checked-in', 'checked_in'] },
       }),
       // 3. Patients awaiting consultation right now (checked-in triage queue)
       Appointment.countDocuments({
         appointmentDate: { $gte: startOfToday, $lte: endOfToday },
-        status: 'checked-in',
+        status: { $in: ['checked-in', 'checked_in'] },
       }),
       // 4. Consultations completed today
       Consultation.countDocuments({
@@ -88,7 +88,17 @@ const getAppointmentQueue = async (req, res, next) => {
     };
 
     if (status && status !== 'all') {
-      query.status = status;
+      if (status === 'checked-in' || status === 'checked_in') {
+        query.status = { $in: ['checked-in', 'checked_in'] };
+      } else if (status === 'in-consultation' || status === 'in_consultation') {
+        query.status = { $in: ['in-consultation', 'in_consultation'] };
+      } else if (status === 'no-show' || status === 'no_show') {
+        query.status = { $in: ['no-show', 'no_show'] };
+      } else if (status === 'scheduled' || status === 'booked') {
+        query.status = { $in: ['scheduled', 'booked'] };
+      } else {
+        query.status = status;
+      }
     }
 
     const appointments = await Appointment.find(query)
@@ -145,10 +155,15 @@ const searchPatients = async (req, res, next) => {
       searchFilter = {
         $or: [
           { patientId: regex },
+          { patientNumber: regex },
           { universityId: regex },
           { firstName: regex },
           { lastName: regex },
+          { legalName: regex },
+          { preferredName: regex },
           { email: regex },
+          { phone: regex },
+          { phoneNumber: regex },
         ],
       };
     }

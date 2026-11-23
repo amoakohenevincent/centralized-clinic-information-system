@@ -10,6 +10,9 @@ const prescriptionHandoffRoutes = require('./prescriptionHandoffRoutes');
 // Module 3: Prescription Management routes (team member's code)
 const prescriptionRoutes = require('./prescriptionRoutes');
 
+// Module 4: Pharmacy & Inventory routes (team member's code)
+const inventoryRoutes = require('./inventoryRoutes');
+
 // Module 1: Patient & Appointment routes (from main branch)
 const patientRoutes = require('../src/routes/patientRoutes');
 const appointmentRoutes = require('../src/routes/appointmentRoutes');
@@ -26,5 +29,9 @@ router.use('/clinical/prescription-handoff', prescriptionHandoffRoutes);
 
 // ─── Module 3: Prescription Management ───
 router.use('/prescriptions', prescriptionRoutes);
+
+// ─── Module 4: Pharmacy & Inventory Management ───
+router.use('/medicines', inventoryRoutes);
+router.use('/inventory', inventoryRoutes);
 
 module.exports = router;

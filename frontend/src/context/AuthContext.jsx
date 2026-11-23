@@ -19,12 +19,19 @@ export const AuthProvider = ({ children }) => {
   }, [currentUser, token]);
 
   const switchRole = (newRole) => {
+    const roleProfiles = {
+      doctor: { role: 'doctor', title: 'Dr.', firstName: 'Sarah', lastName: 'Jenkins', id: 'clinician-123', specialization: 'Internal Medicine' },
+      nurse: { role: 'nurse', title: 'Nurse', firstName: 'Emily', lastName: 'Taylor', id: 'nurse-456', specialization: 'Triage & Vitals' },
+      pharmacist: { role: 'pharmacist', title: 'Pharm.', firstName: 'John', lastName: 'Mensah', id: 'pharm-789', specialization: 'Dispensing Pharmacy' },
+      receptionist: { role: 'receptionist', title: '', firstName: 'Rachel', lastName: 'Desk', id: 'reception-account-1', specialization: 'Front Desk & Registration' },
+      patient: { role: 'patient', title: '', firstName: 'Jordan', lastName: 'Example', id: 'patient-account-1', specialization: 'Student / Patient' },
+      admin: { role: 'admin', title: '', firstName: 'James', lastName: 'Wilson', id: 'admin-001', specialization: 'System Administration' },
+    };
+
+    const target = roleProfiles[newRole] || { ...currentUser, role: newRole };
     const updatedUser = {
       ...currentUser,
-      role: newRole,
-      title: newRole === 'doctor' ? 'Dr.' : newRole === 'nurse' ? 'Nurse' : newRole === 'pharmacist' ? '' : 'Admin',
-      firstName: newRole === 'doctor' ? 'Sarah' : newRole === 'nurse' ? 'Emily' : newRole === 'pharmacist' ? 'John' : 'James',
-      lastName: newRole === 'doctor' ? 'Jenkins' : newRole === 'nurse' ? 'Taylor' : newRole === 'pharmacist' ? 'Patel' : 'Wilson',
+      ...target,
     };
     setCurrentUser(updatedUser);
   };
@@ -33,6 +40,8 @@ export const AuthProvider = ({ children }) => {
   const isNurse = currentUser?.role === 'nurse';
   const isAdmin = currentUser?.role === 'admin';
   const isPharmacist = currentUser?.role === 'pharmacist';
+  const isReceptionist = currentUser?.role === 'receptionist';
+  const isPatient = currentUser?.role === 'patient';
 
   return (
     <AuthContext.Provider
@@ -46,6 +55,8 @@ export const AuthProvider = ({ children }) => {
         isNurse,
         isAdmin,
         isPharmacist,
+        isReceptionist,
+        isPatient,
         switchRole,
       }}
     >

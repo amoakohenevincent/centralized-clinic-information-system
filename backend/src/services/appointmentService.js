@@ -1,19 +1,15 @@
-const Appointment = require("../../models/shared/Appointment");
-const Patient = require("../../models/shared/Patient");
+const Appointment = require("../models/Appointment");
+const Patient = require("../models/Patient");
 const { ApiError } = require("../errors");
 
-const ACTIVE_STATUSES = ["booked", "scheduled", "checked-in", "checked_in", "in-consultation", "in_consultation"];
+const ACTIVE_STATUSES = ["booked", "checked_in", "in_consultation"];
 const STATUS_TRANSITIONS = {
-  booked: ["checked_in", "checked-in", "cancelled", "no_show", "no-show"],
-  scheduled: ["checked_in", "checked-in", "cancelled", "no_show", "no-show"],
-  "checked-in": ["in-consultation", "in_consultation", "cancelled"],
-  checked_in: ["in-consultation", "in_consultation", "cancelled"],
-  "in-consultation": ["completed"],
+  booked: ["checked_in", "cancelled", "no_show"],
+  checked_in: ["in_consultation", "cancelled"],
   in_consultation: ["completed"],
   completed: [],
   cancelled: [],
-  no_show: [],
-  "no-show": [],
+  no_show: []
 };
 
 function parseDate(value, field) {
@@ -119,11 +115,14 @@ async function listSchedule({ from, to, doctorId }) {
   if (doctorId) filter.doctorId = doctorId;
   return Appointment.find(filter)
     .sort({ startsAt: 1 })
-    .populate("patientId");
+    .populate("patientId", "patientNumber legalName preferredName phone");
 }
 
 async function getById(id) {
-  const appointment = await Appointment.findById(id).populate("patientId");
+  const appointment = await Appointment.findById(id).populate(
+    "patientId",
+    "patientNumber legalName preferredName phone"
+  );
   if (!appointment) throw new ApiError(404, "APPOINTMENT_NOT_FOUND", "Appointment was not found.");
   return appointment;
 }
@@ -136,9 +135,11 @@ async function cancel(id, user, reason) {
     if (!patient || String(appointment.patientId) !== String(patient._id)) {
       throw new ApiError(403, "FORBIDDEN", "You can only cancel your own appointments.");
     }
+    if (appointment.status !== "booked" || appointment.startsAt <= new Date()) {
+      throw new ApiError(409, "CANCELLATION_NOT_ALLOWED", "This appointment can no longer be cancelled.");
+    }
   }
-  const transitions = STATUS_TRANSITIONS[appointment.status] || [];
-  if (!transitions.includes("cancelled")) {
+  if (!STATUS_TRANSITIONS[appointment.status].includes("cancelled")) {
     throw new ApiError(409, "INVALID_STATUS_TRANSITION", "This appointment cannot be cancelled in its current status.");
   }
   appointment.status = "cancelled";
@@ -150,8 +151,7 @@ async function cancel(id, user, reason) {
 async function updateStatus(id, nextStatus) {
   const appointment = await Appointment.findById(id);
   if (!appointment) throw new ApiError(404, "APPOINTMENT_NOT_FOUND", "Appointment was not found.");
-  const transitions = STATUS_TRANSITIONS[appointment.status] || [];
-  if (!transitions.includes(nextStatus)) {
+  if (!STATUS_TRANSITIONS[appointment.status].includes(nextStatus)) {
     throw new ApiError(409, "INVALID_STATUS_TRANSITION", "The requested status transition is not allowed.");
   }
   appointment.status = nextStatus;

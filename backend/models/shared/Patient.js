@@ -29,6 +29,7 @@ const patientSchema = new mongoose.Schema(
     userId: {
       type: String,
       sparse: true,
+      unique: true,
       index: true,
       trim: true,
     },
@@ -60,6 +61,12 @@ const patientSchema = new mongoose.Schema(
     dateOfBirth: {
       type: Date,
       required: true,
+      validate: {
+        validator(value) {
+          return value <= new Date();
+        },
+        message: 'Date of birth cannot be in the future.',
+      },
     },
     gender: {
       type: String,
