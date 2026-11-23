@@ -1,43 +1,47 @@
-require("dotenv").config();
-const path = require("node:path");
-const mongoose = require("mongoose");
-const { createApp } = require("./app");
+ const express = require('express');
+const app = express();
+app.use(express.json());
 
-async function start() {
-  if (!process.env.MONGODB_URI) {
-    throw new Error("MONGODB_URI must be configured.");
-  }
-  if (!process.env.SHARED_AUTH_MODULE) {
-    throw new Error("SHARED_AUTH_MODULE must point to the team's authentication adapter.");
-  }
+let medicines = [
+  { id: 1, name: "Paracetamol", price: 5, stock: 100 },
+  { id: 2, name: "Amoxicillin", price: 15, stock: 50 },
+  { id: 3, name: "Vitamin C", price: 10, stock: 8 }
+];
 
-  const authModulePath = path.resolve(process.cwd(), process.env.SHARED_AUTH_MODULE);
-  const authModule = require(authModulePath);
-  if (typeof authModule.authenticate !== "function") {
-    throw new TypeError("The shared auth adapter must export authenticate(req, res, next).");
-  }
-
-  await mongoose.connect(process.env.MONGODB_URI);
-  const app = createApp({
-    authenticate: authModule.authenticate,
-    availabilityProvider: authModule.availabilityProvider,
-    notificationProvider: authModule.notificationProvider,
-    corsOrigin: process.env.CORS_ORIGIN
-  });
-  const port = Number(process.env.PORT || 4000);
-  const server = app.listen(port, () => console.log(`Patient and appointment API listening on ${port}`));
-
-  const shutdown = async () => {
-    server.close(async () => {
-      await mongoose.disconnect();
-      process.exit(0);
-    });
-  };
-  process.on("SIGINT", shutdown);
-  process.on("SIGTERM", shutdown);
-}
-
-start().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
+app.get('/', (req, res) => {
+  res.send('CCIS Pharmacy is working!');
 });
+
+// 1. View all medicines - INVENTORY
+app.get('/medicines', (req, res) => {
+  res.json(medicines);
+});
+
+// 2. Add new medicine - INVENTORY
+app.post('/medicines', (req, res) => {
+  const newMedicine = {
+    id: medicines.length + 1,
+    name: req.body.name,
+    price: req.body.price,
+    stock: req.body.stock
+  };
+  medicines.push(newMedicine);
+  res.json(newMedicine);
+});
+
+// 3. Check low stock - INVENTORY
+app.get('/medicines/low-stock', (req, res) => {
+  const low = medicines.filter(m => m.stock < 10);
+  res.json(low);
+});
+
+// 4. Delete medicine - INVENTORY
+app.delete('/medicines/:id', (req, res) => {
+  medicines = medicines.filter(m => m.id != req.params.id);
+  res.json({ message: "Medicine deleted" });
+});
+
+app.listen(5000, () => {
+  console.log('Server is running on port 5000');
+});
+
