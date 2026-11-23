@@ -1,5 +1,5 @@
 module.exports = {
   testEnvironment: "node",
-  testMatch: ["**/test/**/*.test.js"],
-  clearMocks: true
+  testTimeout: 600000,
+  testPathIgnorePatterns: ["/node_modules/"],
 };

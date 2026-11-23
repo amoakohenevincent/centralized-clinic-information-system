@@ -5,9 +5,9 @@ const { createApp } = require("../src/app");
 const Patient = require("../src/models/Patient");
 const Appointment = require("../src/models/Appointment");
 
-jest.setTimeout(120000);
-process.env.MONGOMS_DOWNLOAD_TIMEOUT = "120000";
-process.env.MONGOMS_STARTUP_TIMEOUT = "120000";
+jest.setTimeout(600000);
+process.env.MONGOMS_DOWNLOAD_TIMEOUT = "600000";
+process.env.MONGOMS_STARTUP_TIMEOUT = "600000";
 
 let mongo;
 let app;
@@ -174,3 +174,4 @@ describe("patient and appointment API", () => {
     expect(response.status).toBe(403);
   });
 });
+

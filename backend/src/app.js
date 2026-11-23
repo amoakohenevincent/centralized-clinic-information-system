@@ -34,3 +34,4 @@ function createApp({ authenticate, availabilityProvider, notificationProvider, c
 }
 
 module.exports = { createApp };
+

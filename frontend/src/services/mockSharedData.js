@@ -1,0 +1,112 @@
+/**
+ * Mock Shared Data
+ * Provides development fallback data representing Module 1 (Patient & Appointment)
+ * and Module 3 (Prescription Management) for standalone testing and UI design verification.
+ */
+
+export const mockDoctor = {
+  _id: 'doc_664c3a001a90c40134567801',
+  username: 'dr_sjenkins',
+  title: 'Dr.',
+  firstName: 'Sarah',
+  lastName: 'Jenkins',
+  role: 'doctor',
+  specialization: 'Internal Medicine',
+  medicalLicenseNumber: 'MD-88319-UNIV',
+  department: 'University Health Services',
+};
+
+export const mockPatients = [
+  {
+    _id: 'pat_664c3e1b1a90c40134567811',
+    patientId: 'PAT-2026-0042',
+    universityId: 'STU-2023-8821',
+    patientType: 'student',
+    firstName: 'Alex',
+    lastName: 'Rivera',
+    fullName: 'Alex Rivera',
+    gender: 'male',
+    dateOfBirth: '2003-05-14',
+    bloodGroup: 'O+',
+    department: 'Faculty of Computing',
+    phoneNumber: '+1 (555) 019-2834',
+    email: 'alex.rivera@student.univ.edu',
+    totalConsultations: 2,
+    lastConsultationDate: '2026-11-10T09:30:00Z',
+    lastPrimaryDiagnosis: 'Acute Pharyngitis',
+  },
+  {
+    _id: 'pat_664c3e1b1a90c40134567812',
+    patientId: 'PAT-2026-0089',
+    universityId: 'EMP-2018-0419',
+    patientType: 'staff',
+    firstName: 'Dr. Helen',
+    lastName: 'Kowalski',
+    fullName: 'Dr. Helen Kowalski',
+    gender: 'female',
+    dateOfBirth: '1981-11-04',
+    bloodGroup: 'A-',
+    department: 'School of Biological Sciences',
+    phoneNumber: '+1 (555) 018-7741',
+    email: 'h.kowalski@faculty.univ.edu',
+    totalConsultations: 4,
+    lastConsultationDate: '2026-10-18T14:15:00Z',
+    lastPrimaryDiagnosis: 'Hypertension Stage 1',
+  },
+  {
+    _id: 'pat_664c3e1b1a90c40134567813',
+    patientId: 'PAT-2026-0105',
+    universityId: 'STU-2024-5501',
+    patientType: 'student',
+    firstName: 'Marcus',
+    lastName: 'Adeyemi',
+    fullName: 'Marcus Adeyemi',
+    gender: 'male',
+    dateOfBirth: '2004-02-28',
+    bloodGroup: 'B+',
+    department: 'Faculty of Engineering',
+    phoneNumber: '+1 (555) 014-9902',
+    email: 'marcus.adeyemi@student.univ.edu',
+    totalConsultations: 1,
+    lastConsultationDate: '2026-09-02T11:00:00Z',
+    lastPrimaryDiagnosis: 'Bronchial Asthma',
+  },
+];
+
+export const mockAppointments = [
+  {
+    _id: 'apt_664c3f2e1a90c40134567901',
+    appointmentNumber: 'APT-2026-0042',
+    queueNumber: 1,
+    appointmentTime: '09:00 AM',
+    appointmentDate: new Date().toISOString(),
+    appointmentType: 'routine',
+    status: 'checked-in',
+    reasonForVisit: 'Severe sore throat, high fever and fatigue for 2 days',
+    patientId: mockPatients[0],
+    doctorId: mockDoctor,
+  },
+  {
+    _id: 'apt_664c3f2e1a90c40134567902',
+    queueNumber: 2,
+    appointmentTime: '09:30 AM',
+    appointmentDate: new Date().toISOString(),
+    appointmentType: 'follow-up',
+    status: 'checked-in',
+    reasonForVisit: 'Blood pressure routine monitoring and medication check',
+    patientId: mockPatients[1],
+    doctorId: mockDoctor,
+  },
+  {
+    _id: 'apt_664c3f2e1a90c40134567903',
+    queueNumber: 3,
+    appointmentTime: '10:15 AM',
+    appointmentDate: new Date().toISOString(),
+    appointmentType: 'urgent',
+    status: 'scheduled',
+    reasonForVisit: 'Acute shortness of breath and wheezing during athletic training',
+    patientId: mockPatients[2],
+    doctorId: mockDoctor,
+  },
+];
+

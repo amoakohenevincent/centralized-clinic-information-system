@@ -1,0 +1,163 @@
+{
+  "info": {
+    "name": "CCIS Clinical Records Management API",
+    "description": "Postman Collection for testing Centralized Clinic Information System (CCIS) - Clinical Records Module",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api", "type": "string" },
+    { "key": "token", "value": "YOUR_JWT_TOKEN_HERE", "type": "string" },
+    { "key": "patientId", "value": "664c3e1b1a90c40134567811", "type": "string" },
+    { "key": "appointmentId", "value": "664c3f2e1a90c40134567901", "type": "string" },
+    { "key": "consultationId", "value": "664c3f2e1a90c40134567890", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "1. Clinical Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/clinical/dashboard/stats"
+          }
+        },
+        {
+          "name": "Get Triage Queue",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/clinical/dashboard/queue?status=checked-in",
+              "host": ["{{baseUrl}}"],
+              "path": ["clinical", "dashboard", "queue"],
+              "query": [{ "key": "status", "value": "checked-in" }]
+            }
+          }
+        },
+        {
+          "name": "Search Patients (by Name, ID, Student ID)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/clinical/patients/search?query=Alex",
+              "host": ["{{baseUrl}}"],
+              "path": ["clinical", "patients", "search"],
+              "query": [{ "key": "query", "value": "Alex" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Consultations",
+      "item": [
+        {
+          "name": "Create & Finalize Consultation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patientId\": \"{{patientId}}\",\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"clinicalObservations\": \"Bilateral tonsillar hypertrophy with exudates.\",\n  \"vitalSigns\": {\n    \"bloodPressure\": \"120/80\",\n    \"heartRate\": 82,\n    \"temperature\": 38.4,\n    \"weight\": 70,\n    \"height\": 175\n  },\n  \"presentingComplaints\": [\n    { \"complaint\": \"Severe sore throat\", \"duration\": \"3 days\", \"severity\": \"severe\" }\n  ],\n  \"symptoms\": [\"Fever\", \"Dysphagia\"],\n  \"diagnoses\": [\n    {\n      \"diagnosisName\": \"Acute Tonsillitis\",\n      \"diagnosisCode\": \"J03.90\",\n      \"diagnosisType\": \"primary\",\n      \"severity\": \"moderate\"\n    }\n  ],\n  \"doctorNotes\": \"Prescribed warm saline gargles and antibiotic therapy.\",\n  \"followUpRecommendations\": {\n    \"followUpRequired\": true,\n    \"instructions\": \"Return if fever persists beyond 48 hours.\"\n  }\n}"
+            },
+            "url": "{{baseUrl}}/consultations"
+          }
+        },
+        {
+          "name": "Get Consultation by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/consultations/{{consultationId}}"
+          }
+        },
+        {
+          "name": "Get Chronological History for Patient",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/consultations/patient/{{patientId}}?sort=desc"
+          }
+        },
+        {
+          "name": "Controlled Amendment of Consultation Record",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clinicalObservations\": \"Revised observations: Coarse basal crackles resolved.\",\n  \"reasonForChange\": \"Follow-up assessment after review of lab tests.\"\n}"
+            },
+            "url": "{{baseUrl}}/consultations/{{consultationId}}"
+          }
+        },
+        {
+          "name": "Record Diagnosis (Append without data loss)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"diagnosisName\": \"Type 2 Diabetes Mellitus\",\n  \"diagnosisCode\": \"E11.9\",\n  \"diagnosisType\": \"secondary\",\n  \"severity\": \"moderate\",\n  \"notes\": \"Fasting plasma glucose 140 mg/dL\"\n}"
+            },
+            "url": "{{baseUrl}}/consultations/{{consultationId}}/diagnoses"
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Medical Records",
+      "item": [
+        {
+          "name": "Get Patient Longitudinal Medical History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/medical-records/patient/{{patientId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Prescription Handoff",
+      "item": [
+        {
+          "name": "Initiate Prescription Handoff",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"consultationId\": \"{{consultationId}}\",\n  \"handoffNotes\": \"Patient has penicillin allergy. Prescribe alternative antibiotic.\"\n}"
+            },
+            "url": "{{baseUrl}}/clinical/prescription-handoff"
+          }
+        },
+        {
+          "name": "Get Prescription Handoff Status",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/clinical/prescription-handoff/{{consultationId}}/status"
+          }
+        }
+      ]
+    }
+  ]
+}
+
