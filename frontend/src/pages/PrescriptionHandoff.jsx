@@ -15,9 +15,9 @@ export const PrescriptionHandoff = ({ prescription, onNavigate }) => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 py-6 animate-fade-in">
+    <div className="max-w-2xl mx-auto space-y-6 py-8 px-4 animate-fadeIn">
       {/* Success Hero Card */}
-      <div className="bg-white rounded-2xl border border-teal-200 p-8 shadow-sm text-center space-y-4">
+      <div className="bg-white rounded-3xl border border-slate-100 p-8 sm:p-10 shadow-card text-center space-y-4">
         <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />

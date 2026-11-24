@@ -1,7 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Calendar, User, Clock, CheckCircle2, AlertCircle, PlusCircle, XCircle } from 'lucide-react';
+import {
+  Calendar,
+  User,
+  Clock,
+  CheckCircle2,
+  AlertCircle,
+  PlusCircle,
+  XCircle,
+  ShieldCheck,
+  Stethoscope,
+  Heart,
+  Phone,
+  MapPin,
+  ArrowRight,
+} from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import Badge from '../components/common/Badge';
 
 const dateOnly = (date) => {
   const local = new Date(date);
@@ -60,7 +75,6 @@ export default function PatientPortal() {
         address: data.address || '',
       });
     } catch (err) {
-      // Profile might not exist yet for this user
       setProfile(null);
     } finally {
       setProfileLoading(false);
@@ -74,10 +88,9 @@ export default function PatientPortal() {
       setDoctors(res.data || res || []);
       if (res.data?.length > 0) setSelectedDoctor(res.data[0].id);
     } catch (err) {
-      // Fallback doctor list
       setDoctors([
-        { id: 'clinician-123', name: 'Dr. Sarah Jenkins' },
-        { id: 'clinician-456', name: 'Dr. John Mensah' },
+        { id: 'clinician-123', name: 'Dr. Sarah Jenkins (General Medicine)' },
+        { id: 'clinician-456', name: 'Dr. John Mensah (Internal Medicine)' },
       ]);
       setSelectedDoctor('clinician-123');
     }
@@ -92,7 +105,6 @@ export default function PatientPortal() {
       const res = await api.get(`/appointments/availability?doctorId=${encodeURIComponent(selectedDoctor)}&from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
       setAvailableSlots(res.data || res || []);
     } catch (err) {
-      // If mock/not configured, generate default daytime slots
       const mockSlots = [
         { startsAt: `${bookingDate}T09:00:00.000Z`, endsAt: `${bookingDate}T09:30:00.000Z` },
         { startsAt: `${bookingDate}T10:00:00.000Z`, endsAt: `${bookingDate}T10:30:00.000Z` },
@@ -111,7 +123,6 @@ export default function PatientPortal() {
       const res = await api.get('/appointments/mine');
       setMyAppointments(res.data || res || []);
     } catch (err) {
-      // Fallback
       setMyAppointments([]);
     } finally {
       setLoadingAppointments(false);
@@ -143,7 +154,7 @@ export default function PatientPortal() {
         doctorId: selectedDoctor,
         startsAt: selectedSlot.startsAt,
       });
-      setBookingSuccess('Appointment successfully booked!');
+      setBookingSuccess('Appointment successfully booked! The clinic receptionist will confirm your queue slot on arrival.');
       setSelectedSlot(null);
       loadMyAppointments();
       loadSlots();
@@ -190,79 +201,91 @@ export default function PatientPortal() {
     }
   };
 
-  return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="mb-6 pb-4 border-b border-[#e9e9e7]">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[#787774]">
-          Patient Self-Service Portal
-        </span>
-        <h1 className="text-2xl font-serif font-bold text-[#191919] mt-1">Appointments & Profile</h1>
-        <p className="text-xs text-[#787774] mt-0.5">
-          Schedule consultations, view appointment history, and maintain your medical record contact details.
-        </p>
+  const tabs = [
+    { id: 'book', label: 'Book a Doctor Visit', icon: Calendar },
+    { id: 'appointments', label: `My Appointments (${myAppointments.length})`, icon: Clock },
+    { id: 'profile', label: 'My Medical Profile', icon: User },
+  ];
 
-        {/* Tab switcher */}
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={() => setActiveTab('book')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === 'book'
-                ? 'bg-[#191919] text-white'
-                : 'bg-white border border-[#e9e9e7] text-[#5a5a5a] hover:bg-[#fbfbfa]'
-            }`}
-          >
-            Book a Visit
-          </button>
-          <button
-            onClick={() => setActiveTab('appointments')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === 'appointments'
-                ? 'bg-[#191919] text-white'
-                : 'bg-white border border-[#e9e9e7] text-[#5a5a5a] hover:bg-[#fbfbfa]'
-            }`}
-          >
-            My Appointments ({myAppointments.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`px-3 py-1.5 text-xs font-medium transition-colors ${
-              activeTab === 'profile'
-                ? 'bg-[#191919] text-white'
-                : 'bg-white border border-[#e9e9e7] text-[#5a5a5a] hover:bg-[#fbfbfa]'
-            }`}
-          >
-            My Profile
-          </button>
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
+      {/* Header */}
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500" />
+            <span>MediWell Health • Patient Self-Service</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Patient Portal & Appointments
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Book consultations with specialist doctors, view appointment history, and maintain contact information.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-200">
+          <ShieldCheck className="w-4 h-4 text-teal-600" />
+          <span>Verified Patient Account</span>
         </div>
       </div>
 
+      {/* Tab Switcher */}
+      <div className="flex flex-wrap items-center gap-2 bg-white p-2 rounded-2xl border border-slate-100 shadow-xs">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                activeTab === tab.id
+                  ? 'bg-teal-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Icon className="w-3.5 h-3.5" />
+              <span>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
       {bookingSuccess && (
-        <div className="mb-4 p-3 bg-[#dbeddb] border border-[#2b784c]/20 text-[#2b784c] text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4" /> {bookingSuccess}
+        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-xs font-bold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> {bookingSuccess}
         </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-[#ffe2dd] border border-[#c3453a]/20 text-[#c3453a] text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4" /> {error}
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs font-bold flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" /> {error}
         </div>
       )}
 
-      {/* Tab: Book a Visit */}
+      {/* Tab 1: Book a Visit */}
       {activeTab === 'book' && (
-        <div className="bg-white border border-[#e9e9e7] p-6 shadow-sm">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#191919] mb-4 pb-2 border-b border-[#e9e9e7]">
-            Schedule New Doctor Appointment
-          </h2>
-          <form onSubmit={handleBook} className="space-y-4 text-xs">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-6">
+          <div className="border-b border-slate-100 pb-3">
+            <h2 className="text-base font-bold text-slate-900">
+              Schedule New Doctor Consultation
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Select your preferred doctor, appointment date, and available time slot.
+            </p>
+          </div>
+
+          <form onSubmit={handleBook} className="space-y-6 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="block font-semibold text-[#5a5a5a] mb-1">Select Clinician</label>
+                <label className="block font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                  <Stethoscope className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Select Specialist Clinician</span>
+                </label>
                 <select
                   value={selectedDoctor}
                   onChange={(e) => setSelectedDoctor(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#e9e9e7] bg-[#fbfbfa] text-[#191919] focus:outline-none"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-2xl bg-slate-50 text-slate-900 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                 >
                   {doctors.map((d) => (
                     <option key={d.id} value={d.id}>
@@ -273,39 +296,47 @@ export default function PatientPortal() {
               </div>
 
               <div>
-                <label className="block font-semibold text-[#5a5a5a] mb-1">Appointment Date</label>
+                <label className="block font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Appointment Date</span>
+                </label>
                 <input
                   type="date"
                   min={dateOnly(new Date())}
                   value={bookingDate}
                   onChange={(e) => setBookingDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-[#e9e9e7] bg-[#fbfbfa] text-[#191919] focus:outline-none"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-2xl bg-slate-50 text-slate-900 text-xs sm:text-sm font-semibold focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20 cursor-pointer"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-semibold text-[#5a5a5a] mb-2">Available Time Slots</label>
+              <label className="block font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-teal-600" />
+                <span>Available Consultation Time Slots</span>
+              </label>
+
               {availableSlots.length === 0 ? (
-                <p className="text-xs text-[#787774] p-4 bg-[#fbfbfa] border border-[#e9e9e7] text-center">
-                  No available slots found for this clinician on {bookingDate}.
-                </p>
+                <div className="p-8 bg-slate-50 border border-slate-100 rounded-2xl text-center text-slate-500">
+                  No slots currently available for this clinician on {bookingDate}. Please pick another date.
+                </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
                   {availableSlots.map((slot, idx) => {
                     const isSelected = selectedSlot?.startsAt === slot.startsAt;
+                    const slotTime = formatDate(slot.startsAt).split(',')[1] || formatDate(slot.startsAt);
                     return (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => setSelectedSlot(slot)}
-                        className={`p-2.5 text-center text-xs transition-colors border ${
+                        className={`p-3.5 rounded-2xl text-center text-xs font-bold transition-all border ${
                           isSelected
-                            ? 'bg-[#191919] text-white border-[#191919] font-bold'
-                            : 'bg-[#fbfbfa] text-[#191919] border-[#e9e9e7] hover:border-[#191919]'
+                            ? 'bg-teal-600 text-white border-teal-600 shadow-md ring-2 ring-teal-400/30'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:border-teal-400 hover:bg-teal-50/50'
                         }`}
                       >
-                        {formatDate(slot.startsAt).split(',')[1] || formatDate(slot.startsAt)}
+                        {slotTime}
                       </button>
                     );
                   })}
@@ -313,53 +344,70 @@ export default function PatientPortal() {
               )}
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || !selectedSlot}
-              className="w-full py-2.5 bg-[#191919] text-white font-medium hover:bg-black transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Booking Visit...' : 'Confirm Appointment Booking'}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading || !selectedSlot}
+                className="w-full py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-xs hover:shadow transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{loading ? 'Confirming Visit...' : 'Confirm Appointment Booking'}</span>
+              </button>
+            </div>
           </form>
         </div>
       )}
 
-      {/* Tab: My Appointments */}
+      {/* Tab 2: My Appointments */}
       {activeTab === 'appointments' && (
-        <div className="bg-white border border-[#e9e9e7] shadow-sm">
-          <div className="px-5 py-3 border-b border-[#e9e9e7] bg-[#fbfbfa]">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#191919]">
-              My Scheduled Appointments
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-card overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
+            <h2 className="text-sm font-bold text-slate-900">
+              My Scheduled Appointments ({myAppointments.length})
             </h2>
+            <span className="text-xs text-slate-500">Self-Service Records</span>
           </div>
+
           {loadingAppointments ? (
-            <div className="p-8 text-center text-xs text-[#787774]">Loading visits...</div>
+            <div className="p-16 text-center text-xs text-slate-500">Loading your visits...</div>
           ) : myAppointments.length === 0 ? (
-            <div className="p-8 text-center text-xs text-[#787774]">
-              You have no active or historical appointments.
+            <div className="p-16 text-center">
+              <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
+                <Calendar className="w-6 h-6" />
+              </div>
+              <h4 className="text-base font-bold text-slate-900">No scheduled appointments</h4>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                You currently have no active or historical consultations booked. Click "Book a Doctor Visit" to schedule one.
+              </p>
             </div>
           ) : (
-            <div className="divide-y divide-[#e9e9e7]">
+            <div className="divide-y divide-slate-100">
               {myAppointments.map((item) => (
-                <div key={item._id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                  <div>
-                    <p className="font-semibold text-sm text-[#191919]">
-                      {formatDate(item.startsAt || item.appointmentDate)}
-                    </p>
-                    <p className="text-[#787774] mt-0.5">Clinician: {item.doctorId}</p>
-                    <span className="inline-block mt-1 px-2 py-0.5 text-[10px] uppercase font-bold bg-[#ebebeb] text-[#5a5a5a]">
-                      {item.status}
-                    </span>
+                <div key={item._id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/70 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold shrink-0">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-sm text-slate-900">
+                        {formatDate(item.startsAt || item.appointmentDate)}
+                      </p>
+                      <p className="text-xs text-slate-500 mt-0.5">Attending Clinician: {item.doctorId}</p>
+                    </div>
                   </div>
 
-                  {item.status === 'booked' && (
-                    <button
-                      onClick={() => handleCancel(item._id)}
-                      className="text-xs text-[#c3453a] hover:underline self-start sm:self-auto font-medium"
-                    >
-                      Cancel Visit
-                    </button>
-                  )}
+                  <div className="flex items-center gap-3 self-end sm:self-center">
+                    <Badge status={item.status} />
+
+                    {item.status === 'booked' && (
+                      <button
+                        onClick={() => handleCancel(item._id)}
+                        className="px-3 py-1.5 text-xs text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100/70 font-bold rounded-xl transition-all"
+                      >
+                        Cancel Visit
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -367,64 +415,74 @@ export default function PatientPortal() {
         </div>
       )}
 
-      {/* Tab: Profile */}
+      {/* Tab 3: Profile */}
       {activeTab === 'profile' && (
-        <div className="bg-white border border-[#e9e9e7] p-6 shadow-sm">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#191919] mb-4 pb-2 border-b border-[#e9e9e7]">
-            Patient Profile Information
-          </h2>
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-6">
+          <div className="border-b border-slate-100 pb-3">
+            <h2 className="text-base font-bold text-slate-900">
+              Personal Profile & Contact Information
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Keep your address and phone number updated for prescription dispensing notifications.
+            </p>
+          </div>
+
           <form onSubmit={handleSaveProfile} className="space-y-4 text-xs">
             <div>
-              <label className="block font-semibold text-[#5a5a5a] mb-1">Legal Full Name</label>
+              <label className="block font-bold text-slate-700 mb-1">Legal Full Name</label>
               <input
                 type="text"
                 disabled={Boolean(profile)}
                 value={profileForm.legalName}
                 onChange={(e) => setProfileForm({ ...profileForm, legalName: e.target.value })}
-                className="w-full px-3 py-2 border border-[#e9e9e7] bg-[#fbfbfa] text-[#191919] disabled:opacity-60"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl bg-slate-100 text-slate-600 font-semibold disabled:opacity-80"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block font-semibold text-[#5a5a5a] mb-1">Preferred Name</label>
+                <label className="block font-bold text-slate-700 mb-1">Preferred Name / Alias</label>
                 <input
                   type="text"
                   value={profileForm.preferredName}
                   onChange={(e) => setProfileForm({ ...profileForm, preferredName: e.target.value })}
-                  className="w-full px-3 py-2 border border-[#e9e9e7] bg-[#fbfbfa] text-[#191919]"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl bg-slate-50 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-[#5a5a5a] mb-1">Phone Number</label>
+                <label className="block font-bold text-slate-700 mb-1">Phone Number</label>
                 <input
                   type="tel"
                   value={profileForm.phone}
                   onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-[#e9e9e7] bg-[#fbfbfa] text-[#191919]"
+                  className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl bg-slate-50 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                 />
               </div>
             </div>
+
             <div>
-              <label className="block font-semibold text-[#5a5a5a] mb-1">Address</label>
+              <label className="block font-bold text-slate-700 mb-1">Residential Address</label>
               <input
                 type="text"
                 value={profileForm.address}
                 onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
-                className="w-full px-3 py-2 border border-[#e9e9e7] bg-[#fbfbfa] text-[#191919]"
+                className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl bg-slate-50 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 bg-[#191919] text-white font-medium hover:bg-black transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Saving...' : 'Save Profile Changes'}
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>{loading ? 'Saving Profile...' : 'Save Profile Changes'}</span>
+              </button>
+            </div>
           </form>
         </div>
       )}
     </div>
   );
 }
-

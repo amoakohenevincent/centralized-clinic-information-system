@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
+import {
+  ArrowLeft,
+  Activity,
+  PlusCircle,
+  CheckCircle2,
+  AlertCircle,
+  FileText,
+} from 'lucide-react';
 import { clinicalService } from '../services/clinicalService';
 import { useAuth } from '../context/AuthContext';
 import DiagnosisBadge from '../components/clinical/DiagnosisBadge';
@@ -81,13 +89,16 @@ const DiagnosisForm = () => {
   if (!consultationId) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center space-y-4">
-        <h2 className="font-serif text-2xl font-normal text-[#191919]">Select an Active Consultation</h2>
-        <p className="text-xs text-[#787774]">
-          To record or append diagnoses, select a consultation session from your queue or archive.
+        <div className="w-12 h-12 rounded-full bg-teal-50 text-teal-600 mx-auto flex items-center justify-center">
+          <Activity className="w-6 h-6" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-900">Select an Active Consultation</h2>
+        <p className="text-xs text-slate-500">
+          To record or append diagnoses, select a consultation session from your waiting list or archive.
         </p>
         <Link
           to="/doctor/dashboard"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#191919] hover:bg-[#333333] text-white rounded-none text-xs font-medium"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-2xl text-xs font-bold shadow-xs"
         >
           Return to Dashboard
         </Link>
@@ -96,30 +107,36 @@ const DiagnosisForm = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
       {/* Back button */}
       <div>
         <Link
           to={`/doctor/consultations/${consultationId}`}
-          className="text-xs font-medium text-[#787774] hover:text-[#191919] flex items-center gap-1 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-teal-700 transition-colors"
         >
-          ← Back to Consultation Details
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Consultation Details</span>
         </Link>
       </div>
 
       {/* Header */}
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-baseline gap-3">
-          <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#191919] tracking-tight">
+      <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500" />
+            <span>Diagnosis Coding & Assessment</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Record Diagnostic Assessment
           </h1>
-          <span className="font-mono text-xs text-[#191919] bg-[#ebebeb] px-2 py-0.5 rounded-none">
-            {consultation?.consultationNumber}
-          </span>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Patient: <strong className="text-slate-900">{consultation?.patientId?.fullName || consultation?.patientId?.firstName}</strong> • ID: <span className="font-mono text-teal-700">{consultation?.patientId?.patientId}</span>
+          </p>
         </div>
-        <p className="text-xs sm:text-sm text-[#787774]">
-          Patient: <strong className="text-[#191919]">{consultation?.patientId?.fullName || consultation?.patientId?.firstName}</strong> • ID: <span className="font-mono text-[#191919]">{consultation?.patientId?.patientId}</span>
-        </p>
+
+        <span className="font-mono text-xs font-bold text-teal-700 bg-teal-50 px-3.5 py-1.5 rounded-2xl border border-teal-200">
+          {consultation?.consultationNumber}
+        </span>
       </div>
 
       {error && <AlertBanner type="danger" message={error} />}
@@ -132,13 +149,14 @@ const DiagnosisForm = () => {
       )}
 
       {/* Previously Recorded Diagnoses */}
-      <div className="bg-white p-6 rounded-none border border-[#e9e9e7] shadow-notion-card space-y-3">
-        <h3 className="font-serif font-bold text-base text-[#191919]">
-          Previously Recorded Diagnoses ({consultation?.diagnoses?.length || 0})
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-3">
+        <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+          <Activity className="w-4 h-4 text-teal-600" />
+          <span>Existing Diagnoses on File ({consultation?.diagnoses?.length || 0})</span>
         </h3>
 
         {consultation?.diagnoses?.length === 0 ? (
-          <p className="text-xs text-[#9b9a97]">No diagnoses recorded yet.</p>
+          <p className="text-xs text-slate-400">No diagnoses recorded yet for this encounter.</p>
         ) : (
           <div className="flex flex-wrap gap-2 pt-1">
             {consultation?.diagnoses?.map((d, i) => (
@@ -149,20 +167,20 @@ const DiagnosisForm = () => {
       </div>
 
       {/* Append New Diagnosis */}
-      <div className="bg-white p-6 rounded-none border border-[#e9e9e7] shadow-notion-card space-y-5">
-        <div className="border-b border-[#f1f1ef] pb-3">
-          <h3 className="font-serif font-bold text-base text-[#191919]">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-5">
+        <div className="border-b border-slate-100 pb-3">
+          <h3 className="text-base font-bold text-slate-900">
             Append New Diagnosis (Non-Destructive)
           </h3>
-          <p className="text-xs text-[#787774]">
-            Safely record secondary, differential, or recurrence diagnoses to the patient profile.
+          <p className="text-xs text-slate-500 mt-0.5">
+            Safely append secondary, differential, or recurrence diagnoses to the patient profile.
           </p>
         </div>
 
         <form onSubmit={handleAddDiagnosis} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-[11px] font-medium text-[#787774] mb-1">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 Diagnosis Description *
               </label>
               <input
@@ -170,11 +188,11 @@ const DiagnosisForm = () => {
                 placeholder="e.g. Type 2 Diabetes Mellitus"
                 value={diagnosisName}
                 onChange={(e) => setDiagnosisName(e.target.value)}
-                className="w-full text-xs px-3 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[#787774] mb-1">
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
                 ICD-10 Code
               </label>
               <input
@@ -182,18 +200,18 @@ const DiagnosisForm = () => {
                 placeholder="E11.9"
                 value={diagnosisCode}
                 onChange={(e) => setDiagnosisCode(e.target.value)}
-                className="w-full text-xs font-mono px-3 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+                className="w-full text-xs sm:text-sm font-mono px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[11px] font-medium text-[#787774] mb-1">Classification</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Classification</label>
               <select
                 value={diagnosisType}
                 onChange={(e) => setDiagnosisType(e.target.value)}
-                className="w-full text-xs px-2 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+                className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
               >
                 <option value="primary">Primary</option>
                 <option value="secondary">Secondary</option>
@@ -202,11 +220,11 @@ const DiagnosisForm = () => {
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[#787774] mb-1">Severity</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Severity</label>
               <select
                 value={severity}
                 onChange={(e) => setSeverity(e.target.value)}
-                className="w-full text-xs px-2 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+                className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
               >
                 <option value="mild">Mild</option>
                 <option value="moderate">Moderate</option>
@@ -215,11 +233,11 @@ const DiagnosisForm = () => {
               </select>
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[#787774] mb-1">Status</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">Status</label>
               <select
                 value={clinicalStatus}
                 onChange={(e) => setClinicalStatus(e.target.value)}
-                className="w-full text-xs px-2 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+                className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
               >
                 <option value="active">Active</option>
                 <option value="recurrence">Recurrence</option>
@@ -230,7 +248,7 @@ const DiagnosisForm = () => {
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-[#787774] mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
               Diagnostic Notes & Evidence
             </label>
             <textarea
@@ -238,7 +256,7 @@ const DiagnosisForm = () => {
               placeholder="Clinical markers, laboratory confirmation, differential considerations..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full text-xs p-3 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+              className="w-full text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
             />
           </div>
 
@@ -246,7 +264,7 @@ const DiagnosisForm = () => {
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2.5 bg-[#191919] hover:bg-[#333333] text-white font-medium text-xs rounded-none shadow-notion-button transition-colors"
+              className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-2xl shadow-xs hover:shadow transition-all"
             >
               {saving ? 'Appending...' : 'Save Diagnosis to Consultation'}
             </button>

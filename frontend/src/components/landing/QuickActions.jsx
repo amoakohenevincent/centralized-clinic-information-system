@@ -81,3 +81,4 @@ export default function QuickActions({ onBookClick, onFindDoctorClick }) {
     </div>
   );
 }
+

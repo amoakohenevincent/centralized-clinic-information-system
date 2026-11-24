@@ -29,7 +29,7 @@ export const DispensingTracker = ({ prescription }) => {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
+    <div className="bg-white rounded-3xl border border-slate-100 shadow-card p-6 sm:p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-base font-semibold text-slate-900">Pharmacy Dispensing Status</h3>

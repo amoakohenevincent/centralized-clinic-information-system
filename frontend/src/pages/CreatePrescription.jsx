@@ -184,18 +184,29 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12 animate-fade-in">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Create Clinical Prescription</h2>
-          <p className="text-xs text-slate-500">
-            Author medications following patient clinical consultation (Module 2)
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span>Physician Prescription Authoring</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Create Clinical Prescription
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Author medications following patient clinical consultation with verified stock and allergy screening.
           </p>
         </div>
-        <Button variant="secondary" size="sm" onClick={() => onNavigate('dashboard')}>
-          Back to Dashboard
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" size="sm" onClick={() => onNavigate('dashboard')}>
+            Prescription Dashboard
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => onNavigate('catalogue')}>
+            Medicine Catalogue
+          </Button>
+        </div>
       </div>
 
       {/* Success Notification Banner */}
@@ -209,11 +220,11 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
       )}
 
       {/* 1. Patient & Consultation Link (Integration Context) */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-teal-500" />
-            <h3 className="text-sm font-semibold text-slate-800">
+            <span className="w-2.5 h-2.5 rounded-full bg-teal-500" />
+            <h3 className="text-base font-bold text-slate-900">
               Clinical Consultation Context (Inbound: Module 2)
             </h3>
           </div>
@@ -272,29 +283,29 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
       </div>
 
       {/* 2. Clinical Notes & Diagnosis */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
-        <h3 className="text-sm font-semibold text-slate-800 border-b border-slate-100 pb-2">
+      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
+        <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
           Clinical Indication
         </h3>
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">
             Clinical Diagnosis / Reason for Prescription <span className="text-rose-500">*</span>
           </label>
           <input
             type="text"
             value={clinicalDiagnosis}
             onChange={(e) => setClinicalDiagnosis(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500"
+            className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl text-xs sm:text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
             required
           />
         </div>
       </div>
 
       {/* 3. Prescribed Medications Builder */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
           <div>
-            <h3 className="text-sm font-semibold text-slate-800">Prescribed Medications</h3>
+            <h3 className="text-base font-bold text-slate-900">Prescribed Medications</h3>
             <p className="text-xs text-slate-500">
               Select verified medicines from the shared Pharmacy Catalogue (Module 4)
             </p>
@@ -311,10 +322,10 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
         </div>
 
         {items.length === 0 ? (
-          <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl text-center space-y-2">
-            <div className="text-slate-400 text-sm font-medium">No medications added yet</div>
-            <p className="text-xs text-slate-500">
-              Click the button above to browse and select medicines from the shared inventory.
+          <div className="p-12 border-2 border-dashed border-slate-200 rounded-3xl text-center space-y-3">
+            <div className="text-slate-500 text-sm font-bold">No medications added yet</div>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              Click the button below to browse available medicines and specify dosages.
             </p>
             <Button
               type="button"
@@ -341,8 +352,8 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
       </div>
 
       {/* 4. General Patient Instructions & Controlled Substance Flag */}
-      <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
-        <h3 className="text-sm font-semibold text-slate-800 border-b border-slate-100 pb-2">
+      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
+        <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
           General Instructions & Sign-Off
         </h3>
 

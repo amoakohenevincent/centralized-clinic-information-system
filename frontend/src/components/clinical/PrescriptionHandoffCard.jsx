@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Pill, Send, CheckCircle2, ArrowRight } from 'lucide-react';
 import { clinicalService } from '../../services/clinicalService';
 import AlertBanner from '../common/AlertBanner';
 import Badge from '../common/Badge';
@@ -33,30 +34,30 @@ const PrescriptionHandoffCard = ({ consultation, onHandoffInitiated }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-none border border-[#e9e9e7] shadow-notion-card space-y-4">
+    <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
       <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-none bg-[#f1f1ef] text-[#191919] border border-[#e5e5e3] flex items-center justify-center font-bold text-xs">
-            Rx
+        <div className="flex items-center gap-3.5">
+          <div className="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-sm">
+            <Pill className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-serif font-bold text-lg text-[#191919]">
+            <h4 className="font-bold text-base text-slate-900">
               Prescription & Pharmacy Handoff
             </h4>
-            <p className="text-xs text-[#787774]">
-              Send patient diagnosis and vitals to the dispensary / pharmacy
+            <p className="text-xs text-slate-500 mt-0.5">
+              Instantly route consultation findings and diagnosis to the dispensing pharmacy queue.
             </p>
           </div>
         </div>
 
         <div>
           {isInitiated ? (
-            <Badge>
+            <Badge variant="completed">
               Prescription Sent
             </Badge>
           ) : (
-            <Badge>
-              Not Sent Yet
+            <Badge variant="neutral">
+              Awaiting Handoff
             </Badge>
           )}
         </div>
@@ -67,48 +68,39 @@ const PrescriptionHandoffCard = ({ consultation, onHandoffInitiated }) => {
       {isInitiated ? (
         <AlertBanner
           type="success"
-          title="Prescription Sent to Pharmacy"
-          message="Patient details, illness diagnosed, vitals, and drug allergies have been sent to the clinic pharmacy."
-        >
-          <div className="mt-3 p-2.5 bg-[#fbfbfa] rounded-none border border-[#e5e5e3] font-mono text-xs text-[#191919] flex items-center justify-between">
-            <span>Prescription Link:</span>
-            <span className="font-bold">
-              {handoffResult?.redirectUrl ||
-                `/prescriptions/new?consultationId=${consultation._id}&patientId=${consultation.patientId?._id}`}
-            </span>
-          </div>
-          <p className="text-[11px] text-[#787774] mt-2 italic">
-            * Dispensing of drugs is handled by the pharmacy and dispensary staff.
-          </p>
-        </AlertBanner>
+          title="Prescription Transmitted to Pharmacy"
+          message={`Transmitted to CCIS Pharmacy Queue under Token #${
+            handoffResult?.data?.prescriptionNumber ||
+            consultation?.prescriptionHandoff?.prescriptionNumber ||
+            'RX-PENDING'
+          }. Pharmacist can dispense medications immediately.`}
+        />
       ) : (
-        <div className="space-y-4 pt-1">
-          <p className="text-xs text-[#5a5a5a] leading-relaxed">
-            Send this patient's diagnosis and notes to the pharmacy so medication can be prescribed and dispensed.
-          </p>
-
+        <div className="space-y-3 pt-2">
           <div>
-            <label className="block text-[11px] font-medium text-[#787774] mb-1">
-              Doctor's Notes for the Pharmacist (Optional)
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Prescription Clinical Instructions / Dispensing Notes
             </label>
             <input
               type="text"
-              placeholder="e.g. Paracetamol 500mg TDS for 3 days; Amoxicillin 500mg TDS for 5 days"
+              placeholder="e.g. Dispense first-line Artemether-Lumefantrine 20/120mg, Paracetamol 500mg TDS"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+              className="w-full text-xs sm:text-sm px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
             />
           </div>
 
-          <button
-            onClick={handleInitiate}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[#191919] hover:bg-[#333333] text-white font-medium text-xs rounded-none shadow-notion-button transition-colors disabled:opacity-50"
-          >
-            <span>
-              {loading ? 'Sending to Pharmacy...' : 'Send Details to Clinic Pharmacy'}
-            </span>
-          </button>
+          <div className="flex justify-end pt-1">
+            <button
+              type="button"
+              onClick={handleInitiate}
+              disabled={loading}
+              className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-xs hover:shadow transition-all flex items-center gap-2 disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+              <span>{loading ? 'Transmitting to Pharmacy...' : 'Initiate Pharmacy Handoff'}</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

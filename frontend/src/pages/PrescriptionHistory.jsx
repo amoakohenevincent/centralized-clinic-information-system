@@ -29,12 +29,18 @@ export const PrescriptionHistory = ({ onNavigate, onSelectPrescription }) => {
   });
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Clinical Prescription History & Archive</h2>
-          <p className="text-xs text-slate-500">
-            Searchable historical audit record across all university clinic encounters
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500" />
+            <span>Prescription Records Archive</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Prescription History & Archive
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Searchable historical audit record across all university clinic encounters and fulfilled orders.
           </p>
         </div>
         <Button variant="secondary" size="sm" onClick={() => onNavigate('dashboard')}>
@@ -43,9 +49,9 @@ export const PrescriptionHistory = ({ onNavigate, onSelectPrescription }) => {
       </div>
 
       {/* Filter Header */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
-          <label className="block text-[11px] font-semibold text-slate-500 mb-1">
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">
             Search Patient, ID, or RX Number
           </label>
           <input
@@ -53,16 +59,16 @@ export const PrescriptionHistory = ({ onNavigate, onSelectPrescription }) => {
             placeholder="e.g. Kofi, STU-2024, RX-202611..."
             value={patientFilter}
             onChange={(e) => setPatientFilter(e.target.value)}
-            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500"
+            className="w-full px-3.5 py-2 border border-slate-200 rounded-2xl text-xs sm:text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
           />
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold text-slate-500 mb-1">Dispensing Status</label>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Dispensing Status</label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-teal-500"
+            className="w-full px-3.5 py-2 border border-slate-200 rounded-2xl text-xs sm:text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
           >
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
@@ -74,11 +80,11 @@ export const PrescriptionHistory = ({ onNavigate, onSelectPrescription }) => {
         </div>
 
         <div>
-          <label className="block text-[11px] font-semibold text-slate-500 mb-1">Time Horizon</label>
+          <label className="block text-xs font-bold text-slate-700 mb-1.5">Time Horizon</label>
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
-            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-teal-500"
+            className="w-full px-3.5 py-2 border border-slate-200 rounded-2xl text-xs sm:text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
           >
             <option value="all">All Available Records</option>
             <option value="today">Today</option>
@@ -89,7 +95,7 @@ export const PrescriptionHistory = ({ onNavigate, onSelectPrescription }) => {
       </div>
 
       {/* History Table */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-3xl border border-slate-100 shadow-card overflow-hidden">
         <div className="overflow-x-auto">
           {loading ? (
             <div className="p-12 text-center text-xs text-slate-500">Loading prescription archive...</div>
@@ -99,15 +105,15 @@ export const PrescriptionHistory = ({ onNavigate, onSelectPrescription }) => {
             </div>
           ) : (
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold uppercase tracking-wider text-[11px]">
+              <thead className="bg-slate-50/80 border-b border-slate-100 text-slate-600 font-bold">
                 <tr>
-                  <th className="px-4 py-3">Prescription ID</th>
-                  <th className="px-4 py-3">Patient</th>
-                  <th className="px-4 py-3">Doctor</th>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Prescribed Medicines</th>
-                  <th className="px-4 py-3">Dispensing Status</th>
-                  <th className="px-4 py-3 text-right">View</th>
+                  <th className="px-5 py-3.5">Prescription ID</th>
+                  <th className="px-5 py-3.5">Patient</th>
+                  <th className="px-5 py-3.5">Doctor</th>
+                  <th className="px-5 py-3.5">Date</th>
+                  <th className="px-5 py-3.5">Prescribed Medicines</th>
+                  <th className="px-5 py-3.5">Dispensing Status</th>
+                  <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Calendar, Clock, User, CheckCircle2, Play, AlertCircle, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, User, CheckCircle2, Play, AlertCircle, ArrowRight, RotateCw, Filter } from 'lucide-react';
 import api from '../services/api';
+import Badge from '../components/common/Badge';
 
 const dateOnly = (date) => {
   const local = new Date(date);
@@ -52,142 +53,149 @@ export default function DailySchedule() {
     }
   };
 
-  const statusBadge = (status) => {
-    const s = String(status || '').replace('-', '_');
-    const colors = {
-      booked: 'bg-[#d3e5ef] text-[#24638a]',
-      scheduled: 'bg-[#d3e5ef] text-[#24638a]',
-      checked_in: 'bg-[#fdecc8] text-[#d9730d]',
-      in_consultation: 'bg-[#e8deee] text-[#6940a5]',
-      completed: 'bg-[#dbeddb] text-[#2b784c]',
-      cancelled: 'bg-[#ebebeb] text-[#5a5a5a]',
-      no_show: 'bg-[#ffe2dd] text-[#c3453a]',
-    };
-    return (
-      <span className={`px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase ${colors[s] || 'bg-[#ebebeb] text-[#5a5a5a]'}`}>
-        {s.replace('_', ' ')}
-      </span>
-    );
-  };
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
       {/* Page Header */}
-      <div className="mb-6 pb-4 border-b border-[#e9e9e7]">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#787774]">
-              Reception & Clinic Operations
-            </span>
-            <h1 className="text-2xl font-serif font-bold text-[#191919] mt-1">Daily Appointment Schedule</h1>
-            <p className="text-xs text-[#787774] mt-0.5">Manage patient flow, check-ins, and consultation queues.</p>
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span>Reception & Patient Operations</span>
           </div>
-          <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-[#5a5a5a] flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#787774]" /> Date:
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="px-2.5 py-1 text-xs border border-[#e9e9e7] bg-white text-[#191919] focus:outline-none focus:border-[#191919]"
-              />
-            </label>
-            <button
-              onClick={loadSchedule}
-              className="px-3 py-1 text-xs font-medium bg-[#191919] text-white hover:bg-black transition-colors"
-            >
-              Refresh
-            </button>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Daily Appointment Schedule
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Manage front desk patient flow, process check-ins, and orchestrate consultation queues.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2.5 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-200 text-xs">
+            <Calendar className="w-4 h-4 text-teal-600 shrink-0" />
+            <span className="font-bold text-slate-700">Date:</span>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="bg-transparent font-semibold text-slate-900 focus:outline-none cursor-pointer"
+            />
           </div>
+
+          <button
+            onClick={loadSchedule}
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-xs transition-all"
+          >
+            <RotateCw className="w-3.5 h-3.5" />
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
 
       {actionSuccess && (
-        <div className="mb-4 p-3 bg-[#dbeddb] border border-[#2b784c]/20 text-[#2b784c] text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4" /> {actionSuccess}
+        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-xs font-bold flex items-center gap-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> {actionSuccess}
         </div>
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-[#ffe2dd] border border-[#c3453a]/20 text-[#c3453a] text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4" /> {error}
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs font-bold flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" /> {error}
         </div>
       )}
 
       {/* Schedule Table / Cards */}
-      <div className="bg-white border border-[#e9e9e7] shadow-sm">
-        <div className="px-5 py-3 border-b border-[#e9e9e7] bg-[#fbfbfa] flex items-center justify-between">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#191919]">
-            Appointments for {date} ({appointments.length})
+      <div className="bg-white rounded-3xl border border-slate-100 shadow-card overflow-hidden">
+        <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/60 flex items-center justify-between">
+          <h2 className="text-sm font-bold text-slate-900">
+            Appointments for {date} ({appointments.length} patients)
           </h2>
-          <span className="text-[11px] text-[#787774]">Live Desk Monitor</span>
+          <span className="text-xs font-semibold text-slate-500">Live Desk Monitor</span>
         </div>
 
         {loading ? (
-          <div className="p-8 text-center text-xs text-[#787774]">Loading schedule...</div>
+          <div className="p-16 text-center text-xs text-slate-500">Loading daily schedule...</div>
         ) : appointments.length === 0 ? (
-          <div className="p-8 text-center text-xs text-[#787774]">
-            No appointments scheduled for this date.
+          <div className="p-16 text-center">
+            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
+              <Calendar className="w-6 h-6" />
+            </div>
+            <h4 className="text-base font-bold text-slate-900">No appointments scheduled for this date</h4>
+            <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+              Select another calendar date or register a new walk-in patient from the Walk-In Desk.
+            </p>
           </div>
         ) : (
-          <div className="divide-y divide-[#e9e9e7]">
-            {appointments.map((item) => (
-              <div key={item._id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#fbfbfa] transition-colors">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <p className="font-semibold text-sm text-[#191919]">
-                      {item.patientId?.legalName || item.patientId?.preferredName || item.patientName || 'Patient'}
-                    </p>
-                    <span className="text-[11px] font-mono text-[#787774]">
-                      {item.patientId?.patientNumber || item.appointmentNumber || ''}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-[#787774] mt-1">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" /> {formatDate(item.startsAt || item.appointmentDate)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <User className="w-3.5 h-3.5" /> Clinician: {item.doctorId?.name || item.doctorId || 'General Doctor'}
-                    </span>
-                    {item.patientId?.phone && <span>Phone: {item.patientId.phone}</span>}
-                  </div>
-                </div>
+          <div className="divide-y divide-slate-100">
+            {appointments.map((item) => {
+              const patientName = item.patientId?.legalName || item.patientId?.preferredName || item.patientName || 'Patient';
+              const initials = `${patientName.split(' ')[0]?.[0] || 'P'}${patientName.split(' ')[1]?.[0] || ''}`;
 
-                <div className="flex items-center gap-3">
-                  {statusBadge(item.status)}
-                  <div className="flex items-center gap-1">
-                    {(item.status === 'booked' || item.status === 'scheduled') && (
-                      <button
-                        onClick={() => handleStatusChange(item._id, 'checked_in')}
-                        className="px-2.5 py-1 text-xs font-medium bg-[#191919] text-white hover:bg-black transition-colors"
-                      >
-                        Check-in
-                      </button>
-                    )}
-                    {(item.status === 'checked_in' || item.status === 'checked-in') && (
-                      <button
-                        onClick={() => handleStatusChange(item._id, 'in_consultation')}
-                        className="px-2.5 py-1 text-xs font-medium bg-[#6940a5] text-white hover:bg-[#58338f] transition-colors flex items-center gap-1"
-                      >
-                        <Play className="w-3 h-3" /> Start Visit
-                      </button>
-                    )}
-                    {(item.status === 'in_consultation' || item.status === 'in-consultation') && (
-                      <button
-                        onClick={() => handleStatusChange(item._id, 'completed')}
-                        className="px-2.5 py-1 text-xs font-medium bg-[#2b784c] text-white hover:bg-[#205c39] transition-colors flex items-center gap-1"
-                      >
-                        <CheckCircle2 className="w-3 h-3" /> Complete
-                      </button>
-                    )}
+              return (
+                <div key={item._id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/70 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-xs shrink-0">
+                      {initials}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2.5">
+                        <p className="font-bold text-sm text-slate-900">
+                          {patientName}
+                        </p>
+                        <span className="text-xs font-mono font-semibold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-200">
+                          {item.patientId?.patientNumber || item.appointmentNumber || 'WALK-IN'}
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 mt-1 font-medium">
+                        <span className="flex items-center gap-1 text-slate-700">
+                          <Clock className="w-3.5 h-3.5 text-slate-400" /> {formatDate(item.startsAt || item.appointmentDate)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <User className="w-3.5 h-3.5 text-slate-400" /> Clinician: {item.doctorId?.name || item.doctorId || 'General Medical Officer'}
+                        </span>
+                        {item.patientId?.phone && <span>Tel: {item.patientId.phone}</span>}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 self-end sm:self-center">
+                    <Badge status={item.status} />
+
+                    <div className="flex items-center gap-2">
+                      {(item.status === 'booked' || item.status === 'scheduled') && (
+                        <button
+                          onClick={() => handleStatusChange(item._id, 'checked_in')}
+                          className="px-3.5 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-xs transition-all"
+                        >
+                          Check-in Patient
+                        </button>
+                      )}
+                      {(item.status === 'checked_in' || item.status === 'checked-in') && (
+                        <button
+                          onClick={() => handleStatusChange(item._id, 'in_consultation')}
+                          className="px-3.5 py-1.5 text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-xs transition-all flex items-center gap-1.5"
+                        >
+                          <Play className="w-3 h-3 fill-white" />
+                          <span>Send to Doctor</span>
+                        </button>
+                      )}
+                      {(item.status === 'in_consultation' || item.status === 'in-consultation') && (
+                        <button
+                          onClick={() => handleStatusChange(item._id, 'completed')}
+                          className="px-3.5 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs transition-all flex items-center gap-1.5"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <span>Complete Visit</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
     </div>
   );
 }
-

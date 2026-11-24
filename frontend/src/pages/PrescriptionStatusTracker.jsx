@@ -119,14 +119,18 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">
-            Dispensing Status & Pharmacy Reconciliation
-          </h2>
-          <p className="text-xs text-slate-500">
-            Prescription ID: <span className="font-mono font-bold text-teal-800">{currentRx.prescriptionNumber}</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span>Pharmacy Reconciliation & Dispensing</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Dispensing Status Tracker
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Prescription Token: <span className="font-mono font-bold text-teal-700">{currentRx.prescriptionNumber}</span> • Patient: <strong className="text-slate-900">{currentRx.patientName}</strong>
           </p>
         </div>
 
@@ -135,7 +139,7 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
             Dashboard
           </Button>
           <Button variant="outline" size="sm" onClick={() => onNavigate('details')}>
-            View Full Rx
+            Full Prescription
           </Button>
         </div>
       </div>
@@ -151,17 +155,17 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
       {/* Visual Live Tracker Component */}
       <DispensingTracker prescription={currentRx} />
 
-      {/* Pharmacist Dispensing Execution Panel (Madam Sarah's Integration Interface) */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
+      {/* Pharmacist Dispensing Execution Panel */}
+      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-            <h3 className="text-sm font-semibold text-slate-800">
-              Module 4 Pharmacy Dispensing Action Interface
+            <span className="w-2.5 h-2.5 rounded-full bg-teal-500" />
+            <h3 className="text-base font-bold text-slate-900">
+              Pharmacy Dispensing Execution Interface
             </h3>
           </div>
-          <span className="text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
-            Pharmacist Role Active: {currentUser.name}
+          <span className="text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full">
+            Staff: {currentUser.firstName || currentUser.name || 'Pharmacist'}
           </span>
         </div>
 

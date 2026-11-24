@@ -104,3 +104,4 @@ export default function FindDoctorModal({ isOpen, onClose, onBookWithDoctor }) {
     </div>
   );
 }
+

@@ -70,15 +70,15 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pb-12 animate-fade-in">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
       {/* Action Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Button variant="secondary" size="sm" onClick={() => onNavigate('dashboard')}>
             ← Back
           </Button>
           <div>
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-xl font-bold text-slate-900">
               Prescription {currentRx.prescriptionNumber}
             </h2>
             <p className="text-xs text-slate-500">Official Clinical Record</p>
@@ -108,7 +108,7 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
       )}
 
       {/* Main Printable Clinic Rx Card */}
-      <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm space-y-6 printable-area">
+      <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-card space-y-6 printable-area">
         {/* Clinic Header */}
         <div className="flex justify-between items-start border-b-2 border-teal-700 pb-4">
           <div>

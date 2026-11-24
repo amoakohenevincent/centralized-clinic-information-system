@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
+import {
+  ArrowLeft,
+  Calendar,
+  User,
+  Stethoscope,
+  PlusCircle,
+  Trash2,
+  CheckCircle2,
+  AlertCircle,
+  ExternalLink,
+} from 'lucide-react';
 import { clinicalService } from '../services/clinicalService';
 import { useAuth } from '../context/AuthContext';
 import VitalSignsInput from '../components/clinical/VitalSignsInput';
@@ -114,7 +125,6 @@ const ConsultationForm = () => {
   };
 
   const removeDiagnosis = (idx) => {
-    if (formData.diagnoses.length <= 1) return;
     setFormData((prev) => ({
       ...prev,
       diagnoses: prev.diagnoses.filter((_, i) => i !== idx),
@@ -132,21 +142,12 @@ const ConsultationForm = () => {
   const validateForm = () => {
     const errs = {};
     if (!formData.clinicalObservations.trim()) {
-      errs.clinicalObservations = 'Clinical observations and findings are required.';
-    } else if (formData.clinicalObservations.trim().length < 5) {
-      errs.clinicalObservations = 'Clinical observations must be at least 5 characters.';
+      errs.clinicalObservations = 'Clinical observations and examination notes are mandatory.';
     }
 
-    const validDiagnoses = formData.diagnoses.filter((d) => d.diagnosisName.trim().length > 0);
-    if (validDiagnoses.length === 0) {
-      errs.diagnoses = 'At least one primary diagnosis is required before finalizing a consultation.';
-    }
-
-    if (!formData.patientId) {
-      errs.patientId = 'Patient ID is missing.';
-    }
-    if (!formData.appointmentId) {
-      errs.appointmentId = 'Appointment ID is missing.';
+    const hasValidDiagnosis = formData.diagnoses.some((d) => d.diagnosisName.trim().length > 0);
+    if (!hasValidDiagnosis) {
+      errs.diagnoses = 'At least one primary medical diagnosis must be recorded.';
     }
 
     setErrors(errs);
@@ -213,50 +214,63 @@ const ConsultationForm = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
       {/* Back button */}
       <div>
         <Link
           to="/doctor/appointments"
-          className="text-xs font-medium text-[#787774] hover:text-[#191919] flex items-center gap-1 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-teal-700 transition-colors"
         >
-          ← Back to Appointment Queue
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Waiting Queue</span>
         </Link>
       </div>
 
       {/* Page Header */}
-      <div className="space-y-2">
-        <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#191919] tracking-tight">
-          Doctor's Consultation Form
-        </h1>
-        <p className="text-xs sm:text-sm text-[#787774]">
-          Record patient complaints, examination findings, and diagnosis for appointment #{appointmentId}.
-        </p>
+      <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span>Clinical Encounter Documentation</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Doctor's Clinical Consultation
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Conduct examination, log patient complaints, measure vital signs, and assign formal diagnoses.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-200">
+          <Stethoscope className="w-4 h-4 text-teal-600" />
+          <span>Appointment #{appointmentId}</span>
+        </div>
       </div>
 
       {/* Patient Header Banner */}
       {patient && (
-        <div className="bg-[#f7f6f3] border border-[#e9e9e7] rounded-none p-4 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-none bg-[#f1f1ef] text-[#191919] border border-[#e5e5e3] flex items-center justify-center font-bold text-xs">
+        <div className="bg-gradient-to-r from-teal-50/60 to-slate-50 border border-teal-100 rounded-3xl p-5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow-xs">
               {(patient.fullName || 'P')[0]}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm text-[#191919]">{patient.fullName}</span>
-                <Badge>{patient.universityId}</Badge>
+                <span className="font-extrabold text-base text-slate-900">{patient.fullName}</span>
+                <Badge variant="teal">{patient.universityId}</Badge>
               </div>
-              <p className="text-[11px] text-[#787774] font-mono mt-0.5">
-                Ref: {patient.patientId} • Blood: <strong className="text-[#191919]">{patient.bloodGroup || 'O+'}</strong>
+              <p className="text-xs text-slate-500 font-mono mt-0.5">
+                Ref: {patient.patientId} • Blood Group: <strong className="text-rose-600">{patient.bloodGroup || 'O+'}</strong>
               </p>
             </div>
           </div>
           <Link
             to={`/doctor/patients/${patient._id}/history`}
             target="_blank"
-            className="text-xs font-medium text-[#191919] hover:bg-[#efefee] bg-white border border-[#e5e5e3] px-3 py-1.5 rounded-none transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 bg-white hover:bg-teal-50 border border-teal-200 px-3.5 py-2 rounded-2xl shadow-xs transition-all"
           >
-            View Patient History ↗
+            <span>View Medical History</span>
+            <ExternalLink className="w-3.5 h-3.5" />
           </Link>
         </div>
       )}
@@ -265,43 +279,44 @@ const ConsultationForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Section 1: Encounter Metadata */}
-        <div className="bg-white p-6 rounded-none border border-[#e9e9e7] shadow-notion-card space-y-4">
-          <h3 className="font-serif font-bold text-base text-[#191919]">
-            Date & Doctor on Duty
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
+          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-teal-600" />
+            <span>Encounter Details & Attending Physician</span>
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-[11px] font-medium text-[#787774] mb-1">
-                Date of Visit
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Consultation Date
               </label>
               <input
                 type="date"
                 value={formData.consultationDate}
                 onChange={(e) => setFormData({ ...formData, consultationDate: e.target.value })}
-                className="w-full text-xs px-3 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[#787774] mb-1">
-                Attending Doctor
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Attending Physician
               </label>
               <input
                 type="text"
                 disabled
                 value={`${currentUser.title || 'Dr.'} ${currentUser.firstName} ${currentUser.lastName}`}
-                className="w-full text-xs px-3 py-2 bg-[#f7f6f3] border border-[#e9e9e7] rounded-none text-[#787774]"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-600 font-medium"
               />
             </div>
             <div>
-              <label className="block text-[11px] font-medium text-[#787774] mb-1">
-                Medical License No.
+              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                Medical License Registration
               </label>
               <input
                 type="text"
                 disabled
                 value={currentUser.medicalLicenseNumber || 'MDC-88319-GH'}
-                className="w-full text-xs px-3 py-2 bg-[#f7f6f3] border border-[#e9e9e7] rounded-none text-[#787774] font-mono"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-600 font-mono"
               />
             </div>
           </div>
@@ -314,46 +329,47 @@ const ConsultationForm = () => {
         />
 
         {/* Section 3: Presenting Complaints & Reported Symptoms */}
-        <div className="bg-white p-6 rounded-none border border-[#e9e9e7] shadow-notion-card space-y-4">
-          <div className="flex items-center justify-between border-b border-[#f1f1ef] pb-3">
-            <h3 className="font-serif font-bold text-base text-[#191919]">
-              Chief Complaints (What is bothering the patient?)
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <h3 className="text-base font-bold text-slate-900">
+              Chief Presenting Complaints & Symptoms
             </h3>
             <button
               type="button"
               onClick={addComplaint}
-              className="inline-flex items-center gap-1 text-xs font-medium text-[#191919] hover:bg-[#efefee] bg-[#f1f1ef] px-2.5 py-1 rounded-none border border-[#e5e5e3]"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 hover:text-teal-800 bg-teal-50 hover:bg-teal-100/70 px-3 py-1.5 rounded-xl border border-teal-200 transition-all"
             >
-              + Add Another Complaint
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Add Complaint</span>
             </button>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {formData.presentingComplaints.map((c, idx) => (
-              <div key={idx} className="flex items-center gap-2.5 bg-[#fbfbfa] p-2.5 rounded-none border border-[#e9e9e7]">
-                <div className="flex-1">
+              <div key={idx} className="flex flex-col sm:flex-row items-center gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                <div className="flex-1 w-full">
                   <input
                     type="text"
-                    placeholder="Chief Complaint (e.g. Severe sore throat, acute fever)..."
+                    placeholder="Chief Complaint (e.g. Severe sore throat, acute fever, headache)..."
                     value={c.complaint}
                     onChange={(e) => handleComplaintChange(idx, 'complaint', e.target.value)}
-                    className="w-full text-xs px-3 py-2 bg-white border border-[#e5e5e3] rounded-none text-[#191919]"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                   />
                 </div>
-                <div className="w-32">
+                <div className="w-full sm:w-36">
                   <input
                     type="text"
-                    placeholder="Duration (3 days)"
+                    placeholder="Duration (e.g. 3 days)"
                     value={c.duration}
                     onChange={(e) => handleComplaintChange(idx, 'duration', e.target.value)}
-                    className="w-full text-xs px-3 py-2 bg-white border border-[#e5e5e3] rounded-none text-[#191919]"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                   />
                 </div>
-                <div className="w-28">
+                <div className="w-full sm:w-32">
                   <select
                     value={c.severity}
                     onChange={(e) => handleComplaintChange(idx, 'severity', e.target.value)}
-                    className="w-full text-xs px-2 py-2 bg-white border border-[#e5e5e3] rounded-none text-[#191919]"
+                    className="w-full text-xs px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                   >
                     <option value="mild">Mild</option>
                     <option value="moderate">Moderate</option>
@@ -364,9 +380,9 @@ const ConsultationForm = () => {
                   <button
                     type="button"
                     onClick={() => removeComplaint(idx)}
-                    className="px-2 py-1 text-xs text-[#787774] hover:text-[#191919] hover:bg-[#ececeb] rounded-none border border-[#e5e5e3]"
+                    className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors"
                   >
-                    Remove
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 )}
               </div>
@@ -374,118 +390,119 @@ const ConsultationForm = () => {
           </div>
 
           <div className="pt-2">
-            <label className="block text-[11px] font-medium text-[#787774] mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
               Associated Symptoms (Comma separated)
             </label>
             <input
               type="text"
-              placeholder="e.g. High fever, Dysphagia, Fatigue, Myalgia"
+              placeholder="e.g. High fever, Dysphagia, Fatigue, Myalgia, Chills"
               value={formData.symptomsText}
               onChange={(e) => setFormData({ ...formData, symptomsText: e.target.value })}
-              className="w-full text-xs px-3 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+              className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
             />
           </div>
         </div>
 
         {/* Section 4: Clinical Observations & Physical Findings */}
-        <div className="bg-white p-6 rounded-none border border-[#e9e9e7] shadow-notion-card space-y-3">
-          <div className="flex items-center justify-between border-b border-[#f1f1ef] pb-3">
-            <label className="font-serif font-bold text-base text-[#191919]">
-              Doctor's Examination & Physical Findings *
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <label className="text-base font-bold text-slate-900">
+              Doctor's Examination & Clinical Observations *
             </label>
-            <Badge>Required</Badge>
+            <Badge variant="urgent">Mandatory</Badge>
           </div>
 
           <textarea
             rows={4}
-            placeholder="Write what you observed during the physical examination (e.g. Throat inflamed and red, chest clear, temperature elevated, no swollen glands)..."
+            placeholder="Document examination findings (e.g. Pharynx congested with purulent tonsillar exudates, chest clear on auscultation, no localized lymphadenopathy)..."
             value={formData.clinicalObservations}
             onChange={(e) => setFormData({ ...formData, clinicalObservations: e.target.value })}
-            className={`w-full text-xs sm:text-sm p-3.5 border rounded-none ${
+            className={`w-full text-xs sm:text-sm p-4 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-400/20 ${
               errors.clinicalObservations
-                ? 'border-[#191919] bg-[#fbfbfa]'
-                : 'border-[#e5e5e3] bg-[#fbfbfa] text-[#191919] focus:bg-white'
+                ? 'border-rose-400 bg-rose-50/30'
+                : 'border-slate-200 bg-slate-50/50 text-slate-900 focus:bg-white'
             }`}
           />
           {errors.clinicalObservations && (
-            <p className="text-xs text-[#191919] font-medium">{errors.clinicalObservations}</p>
+            <p className="text-xs text-rose-600 font-bold">{errors.clinicalObservations}</p>
           )}
         </div>
 
         {/* Section 5: Diagnosis Recording */}
-        <div className="bg-white p-6 rounded-none border border-[#e9e9e7] shadow-notion-card space-y-4">
-          <div className="flex items-center justify-between border-b border-[#f1f1ef] pb-3">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
-              <h3 className="font-serif font-bold text-base text-[#191919]">
-                Diagnosis (Identified Sickness or Condition) *
+              <h3 className="text-base font-bold text-slate-900">
+                Medical Diagnoses (Identified Conditions) *
               </h3>
-              <p className="text-[11px] text-[#787774]">
-                Please write at least one diagnosis. This is saved to the patient's permanent clinic record.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Assign clinical conditions to update the patient's permanent medical records.
               </p>
             </div>
             <button
               type="button"
               onClick={addDiagnosis}
-              className="inline-flex items-center gap-1 text-xs font-medium text-[#191919] hover:bg-[#efefee] bg-[#f1f1ef] px-2.5 py-1 rounded-none border border-[#e5e5e3]"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 hover:text-teal-800 bg-teal-50 hover:bg-teal-100/70 px-3 py-1.5 rounded-xl border border-teal-200 transition-all"
             >
-              + Add Another Diagnosis
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>Add Diagnosis</span>
             </button>
           </div>
 
           {errors.diagnoses && (
-            <p className="text-xs text-[#191919] font-medium">{errors.diagnoses}</p>
+            <p className="text-xs text-rose-600 font-bold">{errors.diagnoses}</p>
           )}
 
           <div className="space-y-3">
             {formData.diagnoses.map((diag, idx) => (
-              <div key={idx} className="p-3.5 bg-[#fbfbfa] rounded-none border border-[#e9e9e7] space-y-3">
+              <div key={idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
                 <div className="flex flex-col sm:flex-row gap-3">
                   <div className="flex-1">
-                    <label className="block text-[11px] font-medium text-[#787774] mb-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
                       Illness / Diagnosis Name *
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. Malaria, Acute Tonsillitis, Upper Respiratory Tract Infection"
+                      placeholder="e.g. Malaria, Acute Tonsillitis, Acute Bronchitis"
                       value={diag.diagnosisName}
                       onChange={(e) => handleDiagnosisChange(idx, 'diagnosisName', e.target.value)}
-                      className="w-full text-xs px-3 py-2 bg-white border border-[#e5e5e3] rounded-none text-[#191919]"
-                    />
-                  </div>
-                  <div className="w-full sm:w-28">
-                    <label className="block text-[11px] font-medium text-[#787774] mb-1">
-                      ICD Code (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="B54"
-                      value={diag.diagnosisCode}
-                      onChange={(e) => handleDiagnosisChange(idx, 'diagnosisCode', e.target.value)}
-                      className="w-full text-xs font-mono px-3 py-2 bg-white border border-[#e5e5e3] rounded-none text-[#191919]"
+                      className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                     />
                   </div>
                   <div className="w-full sm:w-32">
-                    <label className="block text-[11px] font-medium text-[#787774] mb-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      ICD-10 Code
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. B54, J03.9"
+                      value={diag.diagnosisCode}
+                      onChange={(e) => handleDiagnosisChange(idx, 'diagnosisCode', e.target.value)}
+                      className="w-full text-xs sm:text-sm font-mono px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                    />
+                  </div>
+                  <div className="w-full sm:w-36">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
                       Diagnosis Type
                     </label>
                     <select
                       value={diag.diagnosisType}
                       onChange={(e) => handleDiagnosisChange(idx, 'diagnosisType', e.target.value)}
-                      className="w-full text-xs px-2 py-2 bg-white border border-[#e5e5e3] rounded-none text-[#191919]"
+                      className="w-full text-xs px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                     >
-                      <option value="primary">Main (Primary)</option>
+                      <option value="primary">Primary</option>
                       <option value="secondary">Secondary</option>
                       <option value="provisional">Provisional</option>
                     </select>
                   </div>
                   <div className="w-full sm:w-32">
-                    <label className="block text-[11px] font-medium text-[#787774] mb-1">
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
                       Severity
                     </label>
                     <select
                       value={diag.severity}
                       onChange={(e) => handleDiagnosisChange(idx, 'severity', e.target.value)}
-                      className="w-full text-xs px-2 py-2 bg-white border border-[#e5e5e3] rounded-none text-[#191919]"
+                      className="w-full text-xs px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                     >
                       <option value="mild">Mild</option>
                       <option value="moderate">Moderate</option>
@@ -498,9 +515,9 @@ const ConsultationForm = () => {
                       <button
                         type="button"
                         onClick={() => removeDiagnosis(idx)}
-                        className="px-2 py-1 text-xs text-[#787774] hover:text-[#191919] hover:bg-[#ececeb] rounded-none border border-[#e5e5e3]"
+                        className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors"
                       >
-                        Remove
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   )}
@@ -511,61 +528,61 @@ const ConsultationForm = () => {
         </div>
 
         {/* Section 6: Doctor's Clinical Notes & Follow-up */}
-        <div className="bg-white p-6 rounded-none border border-[#e9e9e7] shadow-notion-card space-y-4">
-          <h3 className="font-serif font-bold text-base text-[#191919]">
-            Doctor's Advice, Notes & Review Date
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
+          <h3 className="text-base font-bold text-slate-900">
+            Doctor's Advice, Clinical Notes & Review
           </h3>
 
           <div>
-            <label className="block text-[11px] font-medium text-[#787774] mb-1">
-              Doctor's General Notes & Remarks
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              Doctor's Remarks & Clinical Guidance
             </label>
             <textarea
               rows={3}
-              placeholder="Doctor's notes on patient condition, advice given, or test recommendations..."
+              placeholder="Clinical recommendations, lifestyle advice, diet, hydration, or lab test requests..."
               value={formData.doctorNotes}
               onChange={(e) => setFormData({ ...formData, doctorNotes: e.target.value })}
-              className="w-full text-xs sm:text-sm p-3 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919] focus:bg-white"
+              className="w-full text-xs sm:text-sm p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
             />
           </div>
 
-          <div className="pt-2 border-t border-[#f1f1ef] space-y-3">
-            <div className="flex items-center gap-2">
+          <div className="pt-3 border-t border-slate-100 space-y-3">
+            <div className="flex items-center gap-2.5">
               <input
                 type="checkbox"
                 id="followUpRequired"
                 checked={formData.followUpRequired}
                 onChange={(e) => setFormData({ ...formData, followUpRequired: e.target.checked })}
-                className="w-4 h-4 text-[#191919] rounded-none border-[#e5e5e3] focus:ring-0"
+                className="w-4 h-4 text-teal-600 rounded-md border-slate-300 focus:ring-teal-500"
               />
-              <label htmlFor="followUpRequired" className="text-xs font-medium text-[#191919]">
-                Patient needs to return for a clinic review visit
+              <label htmlFor="followUpRequired" className="text-xs font-bold text-slate-800 cursor-pointer">
+                Patient requires follow-up clinic review visit
               </label>
             </div>
 
             {formData.followUpRequired && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-6 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-6 pt-1">
                 <div>
-                  <label className="block text-[11px] font-medium text-[#787774] mb-1">
-                    Review Date
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Scheduled Review Date
                   </label>
                   <input
                     type="date"
                     value={formData.followUpDate}
                     onChange={(e) => setFormData({ ...formData, followUpDate: e.target.value })}
-                    className="w-full text-xs px-3 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-medium text-[#787774] mb-1">
-                    Instructions to Patient
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Patient Instructions
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. Return in 3 days if fever does not stop; drink plenty of water"
+                    placeholder="e.g. Return in 3 days if symptoms persist; take full antibiotics course"
                     value={formData.followUpInstructions}
                     onChange={(e) => setFormData({ ...formData, followUpInstructions: e.target.value })}
-                    className="w-full text-xs px-3 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
                   />
                 </div>
               </div>
@@ -577,16 +594,17 @@ const ConsultationForm = () => {
         <div className="flex items-center justify-end gap-3 pt-2">
           <Link
             to="/doctor/appointments"
-            className="px-4 py-2.5 text-xs font-medium text-[#5a5a5a] hover:text-[#191919] hover:bg-[#f1f1ef] rounded-none"
+            className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-2xl transition-colors"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 bg-[#191919] hover:bg-[#333333] text-white font-medium text-xs sm:text-sm rounded-none shadow-notion-button transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-7 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-xs hover:shadow transition-all flex items-center gap-2 disabled:opacity-50"
           >
-            {saving ? 'Saving...' : 'Save Consultation Record'}
+            <CheckCircle2 className="w-4 h-4" />
+            <span>{saving ? 'Finalizing Record...' : 'Complete & Save Consultation'}</span>
           </button>
         </div>
       </form>

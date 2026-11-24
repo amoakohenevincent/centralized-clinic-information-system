@@ -27,12 +27,18 @@ export const MedicineSelectionView = ({ onNavigate, onSelectForPrescription }) =
   });
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Shared Pharmacy Medicine Catalogue</h2>
-          <p className="text-xs text-slate-500">
-            Real-time medicine inventory synchronized from Module 4 (Pharmacy & Inventory Management)
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
+            <span className="w-2 h-2 rounded-full bg-teal-500" />
+            <span>Pharmacy Inventory Catalogue</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Shared Pharmacy Medicine Catalogue
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Real-time medicine inventory synchronized from Pharmacy & Inventory Management.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -46,14 +52,14 @@ export const MedicineSelectionView = ({ onNavigate, onSelectForPrescription }) =
       </div>
 
       {/* Search & Filters */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex flex-col sm:flex-row gap-3">
+      <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <input
             type="text"
             placeholder="Search by medicine name, active ingredient, or product code..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500"
+            className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-2xl text-xs sm:text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
           />
           <svg
             className="w-4 h-4 text-slate-400 absolute left-3 top-2.5"
@@ -90,7 +96,7 @@ export const MedicineSelectionView = ({ onNavigate, onSelectForPrescription }) =
             return (
               <div
                 key={med._id}
-                className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs hover:border-teal-300 transition-all flex flex-col justify-between"
+                className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card hover:border-teal-200 hover:shadow-floating transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2">

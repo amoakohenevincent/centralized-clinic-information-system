@@ -1,5 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  User,
+  PlusCircle,
+  Edit3,
+  FileText,
+  Activity,
+  ShieldCheck,
+  AlertTriangle,
+} from 'lucide-react';
 import { clinicalService } from '../services/clinicalService';
 import { useAuth } from '../context/AuthContext';
 import VitalSignsDisplay from '../components/clinical/VitalSignsDisplay';
@@ -74,7 +86,7 @@ const ConsultationDetails = () => {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-10 space-y-6">
+      <div className="max-w-6xl mx-auto px-4 py-10 space-y-6">
         <SkeletonCard />
         <SkeletonCard />
       </div>
@@ -86,8 +98,8 @@ const ConsultationDetails = () => {
       <div className="max-w-4xl mx-auto px-4 py-12">
         <AlertBanner type="danger" title="Consultation Not Found" message={error || 'The requested clinical consultation could not be found.'} />
         <div className="mt-4">
-          <Link to="/doctor/dashboard" className="text-xs font-medium text-[#191919] hover:underline flex items-center gap-1">
-            ← Return to Doctor Dashboard
+          <Link to="/doctor/dashboard" className="text-xs font-bold text-teal-600 hover:underline flex items-center gap-1">
+            <ArrowLeft className="w-4 h-4" /> Return to Doctor Dashboard
           </Link>
         </div>
       </div>
@@ -98,100 +110,121 @@ const ConsultationDetails = () => {
   const doctor = consultation.doctorId;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
       {/* Back button */}
       <div>
         <Link
           to={`/doctor/patients/${patient?._id}/history`}
-          className="text-xs font-medium text-[#787774] hover:text-[#191919] flex items-center gap-1 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-teal-700 transition-colors"
         >
-          ← Back to Patient Records
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Patient Medical Records</span>
         </Link>
       </div>
 
-      {/* Header */}
-      <div className="space-y-4">
+      {/* Header Card */}
+      <div className="bg-white rounded-3xl border border-slate-100 shadow-card p-6 sm:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="font-serif text-3xl sm:text-4xl font-normal text-[#191919] tracking-tight">
-                Consultation Details & Notes
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Consultation Record & Notes
               </h1>
-              <Badge>
-                {consultation.status === 'amended' ? 'Updated' : 'Completed'}
+              <Badge variant={consultation.status === 'amended' ? 'amber' : 'completed'}>
+                {consultation.status === 'amended' ? 'Amended' : 'Completed'}
               </Badge>
             </div>
-            <p className="text-xs text-[#787774] mt-1 font-mono">
-              Visit No: <strong className="text-[#191919]">{consultation.consultationNumber}</strong> • {new Date(consultation.consultationDate).toLocaleString()}
+            <p className="text-xs text-slate-500 mt-1 font-mono">
+              Encounter: <strong className="text-teal-700">{consultation.consultationNumber}</strong> • {new Date(consultation.consultationDate).toLocaleString()}
             </p>
           </div>
 
           {/* Action buttons (Doctor only) */}
           {isDoctor && (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <Link
                 to={`/doctor/diagnoses?consultationId=${consultation._id}`}
-                className="px-3 py-1.5 text-xs font-medium text-[#191919] bg-[#f1f1ef] hover:bg-[#e5e5e3] rounded-none border border-[#e5e5e3] transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-2xl shadow-xs transition-all"
               >
-                + Add Diagnosis
+                <PlusCircle className="w-3.5 h-3.5" />
+                <span>Add Diagnosis</span>
               </Link>
 
               <button
                 onClick={() => setIsAmendModalOpen(true)}
-                className="px-3 py-1.5 text-xs font-medium text-[#191919] bg-[#f1f1ef] hover:bg-[#e5e5e3] rounded-none border border-[#e5e5e3] transition-colors"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200/80 rounded-2xl border border-slate-200 transition-all"
               >
-                Update Notes
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Amend Notes</span>
               </button>
             </div>
           )}
         </div>
 
-        {/* Metadata Table */}
-        <div className="bg-white rounded-none border border-[#e9e9e7] p-5 shadow-notion-card">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-            <div className="space-y-1">
-              <span className="text-[#9b9a97] text-[11px] block font-medium">Patient Name</span>
-              <strong className="text-[#191919] block">{patient?.fullName || `${patient?.firstName} ${patient?.lastName}`}</strong>
-              <span className="text-[11px] text-[#191919] font-mono block">{patient?.universityId}</span>
-            </div>
-            <div className="space-y-1">
-              <span className="text-[#9b9a97] text-[11px] block font-medium">Doctor on Duty</span>
-              <strong className="text-[#191919] block">{doctor?.title || 'Dr.'} {doctor?.firstName} {doctor?.lastName}</strong>
-              <span className="text-[11px] text-[#787774] block">{doctor?.specialization || 'Medical Officer'}</span>
-            </div>
-            <div className="space-y-1">
-              <span className="text-[#9b9a97] text-[11px] block font-medium">License / Reg No.</span>
-              <span className="font-mono text-[#191919]">{doctor?.medicalLicenseNumber || 'MDC-88319-GH'}</span>
-            </div>
-            <div className="space-y-1">
-              <span className="text-[#9b9a97] text-[11px] block font-medium">Blood Group</span>
-              <span className="font-bold text-[#191919]">{patient?.bloodGroup || 'O+'}</span>
-            </div>
+        {/* Metadata Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-100">
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-100">
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">
+              Patient Name
+            </span>
+            <strong className="text-slate-900 text-xs sm:text-sm block truncate">
+              {patient?.fullName || `${patient?.firstName} ${patient?.lastName}`}
+            </strong>
+            <span className="text-[11px] text-teal-600 font-mono block mt-0.5">{patient?.universityId}</span>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-100">
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">
+              Attending Doctor
+            </span>
+            <strong className="text-slate-900 text-xs sm:text-sm block truncate">
+              {doctor?.title || 'Dr.'} {doctor?.firstName} {doctor?.lastName}
+            </strong>
+            <span className="text-[11px] text-slate-500 block mt-0.5">{doctor?.specialization || 'Medical Officer'}</span>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-100">
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">
+              License Reg No.
+            </span>
+            <span className="font-mono text-xs font-bold text-slate-800">
+              {doctor?.medicalLicenseNumber || 'MDC-88319-GH'}
+            </span>
+          </div>
+
+          <div className="bg-slate-50/70 p-3.5 rounded-2xl border border-slate-100">
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block mb-0.5">
+              Blood Group
+            </span>
+            <span className="font-mono text-xs font-extrabold text-rose-600">
+              {patient?.bloodGroup || 'O+'}
+            </span>
           </div>
         </div>
       </div>
 
       {/* Vital Signs Grid */}
-      <div className="space-y-2">
-        <span className="text-xs uppercase font-bold tracking-wider text-[#787774] block">
-          Patient Vital Signs Checked
-        </span>
+      <div className="space-y-3">
+        <h3 className="text-sm font-extrabold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+          <Activity className="w-4 h-4 text-teal-600" />
+          <span>Patient Vital Signs Measured</span>
+        </h3>
         <VitalSignsDisplay vitals={consultation.vitalSigns} />
       </div>
 
       {/* Complaints & Symptoms */}
-      <div className="bg-white rounded-none border border-[#e9e9e7] p-6 shadow-notion-card space-y-3">
-        <h3 className="font-serif font-bold text-base text-[#191919]">Patient Complaints & Symptoms</h3>
-        <div className="space-y-2">
+      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
+        <h3 className="text-base font-bold text-slate-900">Patient Complaints & Symptoms</h3>
+        <div className="space-y-2.5">
           {consultation.presentingComplaints?.length === 0 ? (
-            <p className="text-xs text-[#9b9a97]">No complaints logged.</p>
+            <p className="text-xs text-slate-400">No complaints logged.</p>
           ) : (
             consultation.presentingComplaints?.map((c, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-[#fbfbfa] rounded-none border border-[#e9e9e7] text-xs">
-                <span className="font-medium text-[#191919]">{c.complaint}</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-[#787774]">{c.duration}</span>
-                  <Badge variant={c.severity === 'severe' ? 'red' : 'yellow'}>{c.severity}</Badge>
+              <div key={idx} className="flex items-center justify-between p-3.5 bg-slate-50 rounded-2xl border border-slate-100 text-xs">
+                <span className="font-bold text-slate-800">{c.complaint}</span>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-slate-500 font-medium">{c.duration}</span>
+                  <Badge variant={c.severity === 'severe' ? 'urgent' : 'amber'}>{c.severity}</Badge>
                 </div>
               </div>
             ))
@@ -200,10 +233,10 @@ const ConsultationDetails = () => {
 
         {consultation.symptoms?.length > 0 && (
           <div className="pt-2">
-            <span className="text-[11px] font-medium text-[#787774] block mb-1.5">Symptoms Mentioned:</span>
-            <div className="flex flex-wrap gap-1.5">
+            <span className="text-xs font-bold text-slate-500 block mb-2">Reported Symptoms:</span>
+            <div className="flex flex-wrap gap-2">
               {consultation.symptoms.map((s, idx) => (
-                <span key={idx} className="text-xs px-2.5 py-0.5 bg-[#ebebeb] text-[#5a5a5a] rounded-none">
+                <span key={idx} className="text-xs px-3 py-1 bg-slate-100 text-slate-700 font-semibold rounded-full border border-slate-200/60">
                   {s}
                 </span>
               ))}
@@ -213,20 +246,21 @@ const ConsultationDetails = () => {
       </div>
 
       {/* Clinical Observations & Diagnoses */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Physical Findings */}
-        <div className="bg-white rounded-none border border-[#e9e9e7] p-6 shadow-notion-card space-y-3">
-          <h3 className="font-serif font-bold text-base text-[#191919] flex items-center gap-2">
-            Doctor's Findings & Physical Examination
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
+          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-teal-600" />
+            <span>Doctor Examination & Physical Findings</span>
           </h3>
-          <p className="text-xs sm:text-sm text-[#37352f] leading-relaxed bg-[#fbfbfa] p-4 rounded-none border border-[#f1f1ef] whitespace-pre-line">
+          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 whitespace-pre-line font-medium">
             {consultation.clinicalObservations}
           </p>
 
           {consultation.doctorNotes && (
-            <div className="pt-2 border-t border-[#f1f1ef]">
-              <span className="text-[11px] font-medium text-[#787774] block mb-1">Doctor's Notes & Advice:</span>
-              <p className="text-xs text-[#191919] bg-[#fbfbfa] p-3 rounded-none border border-[#e5e5e3]">
+            <div className="pt-3 border-t border-slate-100">
+              <span className="text-xs font-bold text-slate-500 block mb-1.5">Doctor's Clinical Notes:</span>
+              <p className="text-xs text-slate-800 bg-slate-50 p-3.5 rounded-2xl border border-slate-200/60">
                 {consultation.doctorNotes}
               </p>
             </div>
@@ -234,28 +268,29 @@ const ConsultationDetails = () => {
         </div>
 
         {/* Diagnoses List */}
-        <div className="bg-white rounded-none border border-[#e9e9e7] p-6 shadow-notion-card space-y-3">
-          <h3 className="font-serif font-bold text-base text-[#191919]">
-            Illnesses Diagnosed ({consultation.diagnoses?.length || 0})
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
+          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <Activity className="w-4 h-4 text-teal-600" />
+            <span>Diagnosed Conditions ({consultation.diagnoses?.length || 0})</span>
           </h3>
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {consultation.diagnoses?.map((diag, idx) => (
-              <div key={idx} className="p-3 bg-[#fbfbfa] rounded-none border border-[#e9e9e7] space-y-1">
+              <div key={idx} className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
                 <DiagnosisBadge diagnosis={diag} />
-                {diag.notes && <p className="text-[11px] text-[#787774] pl-1">{diag.notes}</p>}
+                {diag.notes && <p className="text-xs text-slate-500 pl-1 mt-1">{diag.notes}</p>}
               </div>
             ))}
           </div>
 
           {/* Follow-up card */}
           {consultation.followUpRecommendations?.followUpRequired && (
-            <div className="mt-4 p-3.5 bg-[#f7f6f3] border border-[#e9e9e7] rounded-none text-xs space-y-1">
-              <span className="font-semibold text-[#191919] block">Review Visit Recommended</span>
-              <div className="text-[#5a5a5a]">
-                Date: {consultation.followUpRecommendations.followUpDate ? new Date(consultation.followUpRecommendations.followUpDate).toLocaleDateString() : 'To be confirmed'}
+            <div className="mt-4 p-4 bg-teal-50/70 border border-teal-200/80 rounded-2xl text-xs space-y-1">
+              <span className="font-bold text-teal-900 block">Follow-up Review Recommended</span>
+              <div className="text-teal-700 font-medium">
+                Scheduled Date: {consultation.followUpRecommendations.followUpDate ? new Date(consultation.followUpRecommendations.followUpDate).toLocaleDateString() : 'To be confirmed'}
               </div>
               {consultation.followUpRecommendations.instructions && (
-                <div className="text-[#787774] text-[11px]">
+                <div className="text-teal-600 text-xs mt-1">
                   Instructions: {consultation.followUpRecommendations.instructions}
                 </div>
               )}
@@ -270,28 +305,29 @@ const ConsultationDetails = () => {
         onHandoffInitiated={() => fetchConsultation()}
       />
 
-      {/* Controlled Traceable Audit Trail (Functional Requirement 6) */}
+      {/* Controlled Traceable Audit Trail */}
       {consultation.auditTrail && consultation.auditTrail.length > 0 && (
-        <div className="bg-white rounded-none border border-[#e9e9e7] p-6 shadow-notion-card space-y-3">
-          <h3 className="font-serif font-bold text-base text-[#191919]">
-            Clinical Record Audit Trail ({consultation.auditTrail.length} revisions)
+        <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
+          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-teal-600" />
+            <span>Clinical Audit Trail ({consultation.auditTrail.length} revisions)</span>
           </h3>
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {consultation.auditTrail.map((entry, idx) => (
-              <div key={idx} className="p-3 bg-[#fbfbfa] rounded-none border border-[#e9e9e7] text-xs space-y-1">
-                <div className="flex items-center justify-between text-[#787774]">
-                  <span className="font-medium text-[#191919]">
-                    Amended by {entry.modifiedByName || 'Authorized Doctor'}
+              <div key={idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-xs space-y-1.5">
+                <div className="flex items-center justify-between text-slate-500">
+                  <span className="font-bold text-slate-800">
+                    Amended by {entry.modifiedByName || 'Authorized Clinician'}
                   </span>
-                  <span className="text-[11px] text-[#9b9a97]">
+                  <span className="text-[11px] font-mono text-slate-400">
                     {new Date(entry.modifiedAt).toLocaleString()}
                   </span>
                 </div>
-                <div className="text-[#37352f] bg-white p-2.5 rounded-none border border-[#e5e5e3]">
-                  <strong>Reason for Modification:</strong> {entry.reasonForChange}
+                <div className="text-slate-800 bg-white p-3 rounded-xl border border-slate-200/80">
+                  <strong className="text-slate-900">Reason for Amendment:</strong> {entry.reasonForChange}
                 </div>
                 {entry.changesSummary && (
-                  <p className="text-[11px] text-[#787774] italic">{entry.changesSummary}</p>
+                  <p className="text-xs text-slate-500 italic">{entry.changesSummary}</p>
                 )}
               </div>
             ))}
@@ -315,31 +351,31 @@ const ConsultationDetails = () => {
           {amendError && <AlertBanner type="danger" message={amendError} />}
 
           <div>
-            <label className="block text-[11px] font-medium text-[#787774] mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
               Revised Clinical Observations & Findings *
             </label>
             <textarea
               rows={4}
               value={amendedObservations}
               onChange={(e) => setAmendedObservations(e.target.value)}
-              className="w-full text-xs p-3 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919] focus:bg-white"
+              className="w-full text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-[#787774] mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
               Revised Doctor's Notes (Optional)
             </label>
             <textarea
               rows={2}
               value={amendedDoctorNotes}
               onChange={(e) => setAmendedDoctorNotes(e.target.value)}
-              className="w-full text-xs p-3 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919] focus:bg-white"
+              className="w-full text-xs p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-[#787774] mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1.5">
               Legal Reason for Clinical Amendment *
             </label>
             <input
@@ -347,22 +383,22 @@ const ConsultationDetails = () => {
               placeholder="e.g. Revised diagnosis following urgent radiology findings."
               value={reasonForChange}
               onChange={(e) => setReasonForChange(e.target.value)}
-              className="w-full text-xs px-3 py-2 bg-[#fbfbfa] border border-[#e5e5e3] rounded-none text-[#191919]"
+              className="w-full text-xs px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
             />
           </div>
 
-          <div className="pt-2 flex justify-end gap-2">
+          <div className="pt-3 flex justify-end gap-2.5">
             <button
               type="button"
               onClick={() => setIsAmendModalOpen(false)}
-              className="px-4 py-2 text-xs font-medium text-[#5a5a5a] hover:bg-[#f1f1ef] rounded-none"
+              className="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={amending}
-              className="px-5 py-2 bg-[#191919] hover:bg-[#333333] text-white text-xs font-medium rounded-none shadow-notion-button disabled:opacity-50"
+              className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold rounded-2xl shadow-xs disabled:opacity-50"
             >
               {amending ? 'Saving Revision...' : 'Save Traceable Amendment'}
             </button>
@@ -374,3 +410,4 @@ const ConsultationDetails = () => {
 };
 
 export default ConsultationDetails;
+
