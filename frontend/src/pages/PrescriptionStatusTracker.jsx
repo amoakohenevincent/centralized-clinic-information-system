@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { DispensingTracker } from '../components/prescription/DispensingTracker';
 import { Button } from '../components/common/Button';
 import { Alert } from '../components/common/Alert';
@@ -56,12 +56,10 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
     }));
   };
 
-  // Pharmacy Handoff Execution (Madam Sarah Module 4 Integration)
   const handleRecordDispense = async (e) => {
     e.preventDefault();
     setFeedback({ type: '', message: '' });
 
-    // Enforce Rule: Do not mark as fulfilled when only some items have been dispensed
     if (overallStatus === 'fulfilled') {
       const anyItemIncomplete = currentRx.items.some((item) => {
         const inp = dispenseInputs[item.medicineId];
@@ -119,18 +117,17 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
-            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-            <span>Pharmacy Reconciliation & Dispensing</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200 inline-block mb-1">
+            Pharmacy Reconciliation & Dispensing
+          </span>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Dispensing Status Tracker
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Prescription Token: <span className="font-mono font-bold text-teal-700">{currentRx.prescriptionNumber}</span> • Patient: <strong className="text-slate-900">{currentRx.patientName}</strong>
+          <p className="text-xs text-slate-500 mt-1">
+            Prescription Token: <span className="font-mono font-bold text-teal-800">{currentRx.prescriptionNumber}</span> • Patient: <strong className="text-slate-900">{currentRx.patientName}</strong>
           </p>
         </div>
 
@@ -156,15 +153,15 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
       <DispensingTracker prescription={currentRx} />
 
       {/* Pharmacist Dispensing Execution Panel */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-teal-500" />
-            <h3 className="text-base font-bold text-slate-900">
+            <span className="w-2.5 h-2.5 rounded-full bg-teal-600" />
+            <h3 className="text-sm sm:text-base font-bold text-slate-900">
               Pharmacy Dispensing Execution Interface
             </h3>
           </div>
-          <span className="text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full">
+          <span className="text-xs font-bold text-teal-800 bg-teal-50 border border-teal-200 px-3 py-1 rounded-full">
             Staff: {currentUser.firstName || currentUser.name || 'Pharmacist'}
           </span>
         </div>
@@ -173,20 +170,20 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
           <Alert
             type="info"
             title="Read-Only View for Non-Pharmacists"
-            message="Only authorized Pharmacy staff may record medication dispensing. To test or simulate dispensing, switch your simulation role to 'Pharmacist (Sarah)' in the top navbar."
+            message="Only authorized Pharmacy staff may record medication dispensing. To test or simulate dispensing, switch your role to Pharmacist in the top navbar."
           />
         ) : (
           <form onSubmit={handleRecordDispense} className="space-y-4 text-xs">
             {/* Item Dispensing Quantity Form */}
-            <div className="space-y-3">
-              <label className="block font-semibold text-slate-700">
+            <div className="space-y-2.5">
+              <label className="block font-bold text-slate-700">
                 Record Dispensed Quantities per Medication:
               </label>
 
               {currentRx.items?.map((item) => (
                 <div
                   key={item.medicineId}
-                  className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="flex-1">
                     <span className="font-bold text-slate-900">{item.medicineName}</span>{' '}
@@ -198,25 +195,25 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
 
                   <div className="flex items-center gap-3">
                     <div>
-                      <span className="text-[10px] text-slate-400 block">Batch Number</span>
+                      <span className="text-[10px] text-slate-500 block">Batch Number</span>
                       <input
                         type="text"
                         value={dispenseInputs[item.medicineId]?.batchNumber || ''}
                         onChange={(e) => handleItemBatchChange(item.medicineId, e.target.value)}
                         placeholder="Batch #"
-                        className="px-2 py-1 text-xs border border-slate-300 rounded font-mono w-28 bg-white focus:ring-1 focus:ring-teal-500"
+                        className="px-2 py-1 text-xs border border-slate-300 rounded font-mono w-28 bg-white focus:ring-1 focus:ring-teal-600"
                       />
                     </div>
 
                     <div>
-                      <span className="text-[10px] text-slate-400 block">Dispense Qty</span>
+                      <span className="text-[10px] text-slate-500 block">Dispense Qty</span>
                       <input
                         type="number"
                         min="0"
                         max={item.quantityPrescribed}
                         value={dispenseInputs[item.medicineId]?.quantityDispensed ?? 0}
                         onChange={(e) => handleItemQtyChange(item.medicineId, e.target.value)}
-                        className="px-2 py-1 text-xs border border-slate-300 rounded font-bold w-20 bg-white focus:ring-1 focus:ring-teal-500"
+                        className="px-2 py-1 text-xs border border-slate-300 rounded font-bold w-20 bg-white focus:ring-1 focus:ring-teal-600"
                         required
                       />
                     </div>
@@ -226,28 +223,28 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
             </div>
 
             {/* Target Status Selection */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
-                  Updated Prescription Status <span className="text-rose-500">*</span>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Updated Prescription Status *
                 </label>
                 <select
                   value={overallStatus}
                   onChange={(e) => setOverallStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white font-medium text-xs focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-semibold text-xs focus:ring-2 focus:ring-teal-600"
                 >
                   <option value="pending">Pending</option>
                   <option value="partially_dispensed">Partially dispensed</option>
                   <option value="fulfilled">Fulfilled</option>
                   <option value="pending_backorder">Pending backorder</option>
                 </select>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-500 mt-1">
                   Note: Marking "Fulfilled" requires that all items have been 100% dispensed.
                 </p>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">
+                <label className="block font-bold text-slate-700 mb-1">
                   Pharmacist Dispensing Notes & Patient Counselling
                 </label>
                 <textarea
@@ -255,20 +252,20 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
                   placeholder="e.g., Patient counselled on taking antibiotic after meals. 2nd item backordered."
                   value={dispensingNotes}
                   onChange={(e) => setDispensingNotes(e.target.value)}
-                  className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-3 py-1.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-teal-600"
                 />
               </div>
             </div>
 
             {/* Submit Action */}
-            <div className="flex justify-end pt-3 border-t border-slate-100">
+            <div className="flex justify-end pt-2 border-t border-slate-200">
               <Button
                 type="submit"
                 variant="primary"
                 size="md"
                 isLoading={isSubmitting}
               >
-                Transmit Dispensing Update to Prescription Module
+                Transmit Dispensing Update
               </Button>
             </div>
           </form>
@@ -277,3 +274,5 @@ export const PrescriptionStatusTracker = ({ prescription, onNavigate, onStatusUp
     </div>
   );
 };
+
+export default PrescriptionStatusTracker;

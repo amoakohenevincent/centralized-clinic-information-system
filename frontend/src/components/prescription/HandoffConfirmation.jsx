@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { Alert } from '../common/Alert';
@@ -28,7 +28,7 @@ export const HandoffConfirmation = ({
         <Alert
           type="info"
           title="Electronic Pharmacy Dispatch Protocol"
-          message="Submitting this prescription will transmit the order directly to Madam Sarah's Pharmacy & Inventory dispensing queue. Once dispensing begins, modifications are locked."
+          message="Submitting this prescription will transmit the order directly to the Pharmacy dispensing queue. Once dispensing begins, modifications are locked."
         />
 
         {/* Patient & Summary */}
@@ -47,12 +47,12 @@ export const HandoffConfirmation = ({
           </div>
           <div className="flex justify-between">
             <span className="text-slate-500">Medications Count:</span>
-            <span className="font-bold text-teal-700">{prescriptionData.items?.length || 0} items</span>
+            <span className="font-bold text-teal-800">{prescriptionData.items?.length || 0} items</span>
           </div>
         </div>
 
         {/* Item Summary List */}
-        <div className="border border-slate-200 rounded-lg max-h-48 overflow-y-auto divide-y divide-slate-100 text-xs">
+        <div className="border border-slate-200 rounded-xl max-h-48 overflow-y-auto divide-y divide-slate-200 text-xs">
           {prescriptionData.items?.map((item, idx) => (
             <div key={idx} className="p-3 flex justify-between items-center">
               <div>
@@ -62,7 +62,7 @@ export const HandoffConfirmation = ({
                   {item.dosage} • {item.frequency} • {item.duration}
                 </div>
               </div>
-              <span className="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-1 rounded">
+              <span className="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-300">
                 Qty: {item.quantityPrescribed}
               </span>
             </div>
@@ -76,7 +76,7 @@ export const HandoffConfirmation = ({
               type="checkbox"
               checked={confirmedAllergies}
               onChange={(e) => setConfirmedAllergies(e.target.checked)}
-              className="mt-0.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+              className="mt-0.5 rounded border-slate-300 text-teal-600 focus:ring-teal-600"
             />
             <span>
               I have checked the patient's allergy profile and confirmed no contraindications exist with the selected medicines.
@@ -88,7 +88,7 @@ export const HandoffConfirmation = ({
               type="checkbox"
               checked={confirmedDosage}
               onChange={(e) => setConfirmedDosage(e.target.checked)}
-              className="mt-0.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+              className="mt-0.5 rounded border-slate-300 text-teal-600 focus:ring-teal-600"
             />
             <span>
               I authorize the clinical dosages, frequencies, and durations prescribed for dispensing.
@@ -97,7 +97,7 @@ export const HandoffConfirmation = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200">
           <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
             Cancel / Edit
           </Button>
@@ -114,3 +114,4 @@ export const HandoffConfirmation = ({
     </Modal>
   );
 };
+export default HandoffConfirmation;

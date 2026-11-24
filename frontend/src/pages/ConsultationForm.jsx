@@ -1,16 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
-import {
-  ArrowLeft,
-  Calendar,
-  User,
-  Stethoscope,
-  PlusCircle,
-  Trash2,
-  CheckCircle2,
-  AlertCircle,
-  ExternalLink,
-} from 'lucide-react';
 import { clinicalService } from '../services/clinicalService';
 import { useAuth } from '../context/AuthContext';
 import VitalSignsInput from '../components/clinical/VitalSignsInput';
@@ -214,63 +203,59 @@ const ConsultationForm = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Back button */}
       <div>
         <Link
           to="/doctor/appointments"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-teal-700 transition-colors"
+          className="text-xs font-bold text-slate-600 hover:text-teal-700 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Back to Waiting Queue</span>
+          ← Back to Waiting Queue
         </Link>
       </div>
 
       {/* Page Header */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
-            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-            <span>Clinical Encounter Documentation</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200 inline-block mb-1">
+            Clinical Encounter Documentation
+          </span>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Doctor's Clinical Consultation
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Conduct examination, log patient complaints, measure vital signs, and assign formal diagnoses.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-700 bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-200">
-          <Stethoscope className="w-4 h-4 text-teal-600" />
-          <span>Appointment #{appointmentId}</span>
+        <div className="text-xs font-bold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-300">
+          Appointment #{appointmentId}
         </div>
       </div>
 
       {/* Patient Header Banner */}
       {patient && (
-        <div className="bg-gradient-to-r from-teal-50/60 to-slate-50 border border-teal-100 rounded-3xl p-5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center font-bold text-sm">
               {(patient.fullName || 'P')[0]}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-base text-slate-900">{patient.fullName}</span>
+                <span className="font-extrabold text-sm sm:text-base text-slate-900">{patient.fullName}</span>
                 <Badge variant="teal">{patient.universityId}</Badge>
               </div>
               <p className="text-xs text-slate-500 font-mono mt-0.5">
-                Ref: {patient.patientId} • Blood Group: <strong className="text-rose-600">{patient.bloodGroup || 'O+'}</strong>
+                Ref: {patient.patientId} • Blood Group: {patient.bloodGroup || 'O+'}
               </p>
             </div>
           </div>
           <Link
             to={`/doctor/patients/${patient._id}/history`}
             target="_blank"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 bg-white hover:bg-teal-50 border border-teal-200 px-3.5 py-2 rounded-2xl shadow-xs transition-all"
+            className="text-xs font-bold text-teal-800 bg-white hover:bg-teal-50 border border-slate-300 px-3.5 py-2 rounded-xl transition-all"
           >
-            <span>View Medical History</span>
-            <ExternalLink className="w-3.5 h-3.5" />
+            View Medical History
           </Link>
         </div>
       )}
@@ -279,44 +264,43 @@ const ConsultationForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Section 1: Encounter Metadata */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
-          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-teal-600" />
-            <span>Encounter Details & Attending Physician</span>
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h3 className="text-sm sm:text-base font-bold text-slate-900">
+            Encounter Details & Attending Physician
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Consultation Date
               </label>
               <input
                 type="date"
                 value={formData.consultationDate}
                 onChange={(e) => setFormData({ ...formData, consultationDate: e.target.value })}
-                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Attending Physician
               </label>
               <input
                 type="text"
                 disabled
                 value={`${currentUser.title || 'Dr.'} ${currentUser.firstName} ${currentUser.lastName}`}
-                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-600 font-medium"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-slate-600 font-medium"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 mb-1">
                 Medical License Registration
               </label>
               <input
                 type="text"
                 disabled
                 value={currentUser.medicalLicenseNumber || 'MDC-88319-GH'}
-                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-100 border border-slate-200 rounded-2xl text-slate-600 font-mono"
+                className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-100 border border-slate-300 rounded-xl text-slate-600 font-mono"
               />
             </div>
           </div>
@@ -329,31 +313,30 @@ const ConsultationForm = () => {
         />
 
         {/* Section 3: Presenting Complaints & Reported Symptoms */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-base font-bold text-slate-900">
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <h3 className="text-sm sm:text-base font-bold text-slate-900">
               Chief Presenting Complaints & Symptoms
             </h3>
             <button
               type="button"
               onClick={addComplaint}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 hover:text-teal-800 bg-teal-50 hover:bg-teal-100/70 px-3 py-1.5 rounded-xl border border-teal-200 transition-all"
+              className="text-xs font-bold text-teal-800 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg border border-teal-200 transition-all"
             >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>Add Complaint</span>
+              Add Complaint
             </button>
           </div>
 
           <div className="space-y-3">
             {formData.presentingComplaints.map((c, idx) => (
-              <div key={idx} className="flex flex-col sm:flex-row items-center gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+              <div key={idx} className="flex flex-col sm:flex-row items-center gap-2.5 bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <div className="flex-1 w-full">
                   <input
                     type="text"
                     placeholder="Chief Complaint (e.g. Severe sore throat, acute fever, headache)..."
                     value={c.complaint}
                     onChange={(e) => handleComplaintChange(idx, 'complaint', e.target.value)}
-                    className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                   />
                 </div>
                 <div className="w-full sm:w-36">
@@ -362,14 +345,14 @@ const ConsultationForm = () => {
                     placeholder="Duration (e.g. 3 days)"
                     value={c.duration}
                     onChange={(e) => handleComplaintChange(idx, 'duration', e.target.value)}
-                    className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                   />
                 </div>
                 <div className="w-full sm:w-32">
                   <select
                     value={c.severity}
                     onChange={(e) => handleComplaintChange(idx, 'severity', e.target.value)}
-                    className="w-full text-xs px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                    className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                   >
                     <option value="mild">Mild</option>
                     <option value="moderate">Moderate</option>
@@ -380,9 +363,9 @@ const ConsultationForm = () => {
                   <button
                     type="button"
                     onClick={() => removeComplaint(idx)}
-                    className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors"
+                    className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-200"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    Remove
                   </button>
                 )}
               </div>
@@ -390,7 +373,7 @@ const ConsultationForm = () => {
           </div>
 
           <div className="pt-2">
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 mb-1">
               Associated Symptoms (Comma separated)
             </label>
             <input
@@ -398,15 +381,15 @@ const ConsultationForm = () => {
               placeholder="e.g. High fever, Dysphagia, Fatigue, Myalgia, Chills"
               value={formData.symptomsText}
               onChange={(e) => setFormData({ ...formData, symptomsText: e.target.value })}
-              className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+              className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
             />
           </div>
         </div>
 
         {/* Section 4: Clinical Observations & Physical Findings */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <label className="text-base font-bold text-slate-900">
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
+            <label className="text-sm sm:text-base font-bold text-slate-900">
               Doctor's Examination & Clinical Observations *
             </label>
             <Badge variant="urgent">Mandatory</Badge>
@@ -417,22 +400,22 @@ const ConsultationForm = () => {
             placeholder="Document examination findings (e.g. Pharynx congested with purulent tonsillar exudates, chest clear on auscultation, no localized lymphadenopathy)..."
             value={formData.clinicalObservations}
             onChange={(e) => setFormData({ ...formData, clinicalObservations: e.target.value })}
-            className={`w-full text-xs sm:text-sm p-4 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-teal-400/20 ${
+            className={`w-full text-xs sm:text-sm p-3.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-600 ${
               errors.clinicalObservations
-                ? 'border-rose-400 bg-rose-50/30'
-                : 'border-slate-200 bg-slate-50/50 text-slate-900 focus:bg-white'
+                ? 'border-slate-900 bg-slate-50'
+                : 'border-slate-300 bg-slate-50 text-slate-900 focus:bg-white'
             }`}
           />
           {errors.clinicalObservations && (
-            <p className="text-xs text-rose-600 font-bold">{errors.clinicalObservations}</p>
+            <p className="text-xs text-slate-900 font-bold">{errors.clinicalObservations}</p>
           )}
         </div>
 
         {/* Section 5: Diagnosis Recording */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-200 pb-3">
             <div>
-              <h3 className="text-base font-bold text-slate-900">
+              <h3 className="text-sm sm:text-base font-bold text-slate-900">
                 Medical Diagnoses (Identified Conditions) *
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
@@ -442,21 +425,20 @@ const ConsultationForm = () => {
             <button
               type="button"
               onClick={addDiagnosis}
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-700 hover:text-teal-800 bg-teal-50 hover:bg-teal-100/70 px-3 py-1.5 rounded-xl border border-teal-200 transition-all"
+              className="text-xs font-bold text-teal-800 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-lg border border-teal-200 transition-all"
             >
-              <PlusCircle className="w-3.5 h-3.5" />
-              <span>Add Diagnosis</span>
+              Add Diagnosis
             </button>
           </div>
 
           {errors.diagnoses && (
-            <p className="text-xs text-rose-600 font-bold">{errors.diagnoses}</p>
+            <p className="text-xs text-slate-900 font-bold">{errors.diagnoses}</p>
           )}
 
           <div className="space-y-3">
             {formData.diagnoses.map((diag, idx) => (
-              <div key={idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
-                <div className="flex flex-col sm:flex-row gap-3">
+              <div key={idx} className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2.5">
+                <div className="flex flex-col sm:flex-row gap-2.5">
                   <div className="flex-1">
                     <label className="block text-xs font-bold text-slate-700 mb-1">
                       Illness / Diagnosis Name *
@@ -466,7 +448,7 @@ const ConsultationForm = () => {
                       placeholder="e.g. Malaria, Acute Tonsillitis, Acute Bronchitis"
                       value={diag.diagnosisName}
                       onChange={(e) => handleDiagnosisChange(idx, 'diagnosisName', e.target.value)}
-                      className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                      className="w-full text-xs sm:text-sm px-3.5 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
                   <div className="w-full sm:w-32">
@@ -478,7 +460,7 @@ const ConsultationForm = () => {
                       placeholder="e.g. B54, J03.9"
                       value={diag.diagnosisCode}
                       onChange={(e) => handleDiagnosisChange(idx, 'diagnosisCode', e.target.value)}
-                      className="w-full text-xs sm:text-sm font-mono px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                      className="w-full text-xs sm:text-sm font-mono px-3.5 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                     />
                   </div>
                   <div className="w-full sm:w-36">
@@ -488,7 +470,7 @@ const ConsultationForm = () => {
                     <select
                       value={diag.diagnosisType}
                       onChange={(e) => handleDiagnosisChange(idx, 'diagnosisType', e.target.value)}
-                      className="w-full text-xs px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                      className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                     >
                       <option value="primary">Primary</option>
                       <option value="secondary">Secondary</option>
@@ -502,7 +484,7 @@ const ConsultationForm = () => {
                     <select
                       value={diag.severity}
                       onChange={(e) => handleDiagnosisChange(idx, 'severity', e.target.value)}
-                      className="w-full text-xs px-3 py-2 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                      className="w-full text-xs px-3 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                     >
                       <option value="mild">Mild</option>
                       <option value="moderate">Moderate</option>
@@ -515,9 +497,9 @@ const ConsultationForm = () => {
                       <button
                         type="button"
                         onClick={() => removeDiagnosis(idx)}
-                        className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors"
+                        className="px-2.5 py-2 text-xs font-semibold rounded-lg border border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-200"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        Remove
                       </button>
                     </div>
                   )}
@@ -528,13 +510,13 @@ const ConsultationForm = () => {
         </div>
 
         {/* Section 6: Doctor's Clinical Notes & Follow-up */}
-        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card space-y-4">
-          <h3 className="text-base font-bold text-slate-900">
+        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h3 className="text-sm sm:text-base font-bold text-slate-900">
             Doctor's Advice, Clinical Notes & Review
           </h3>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 mb-1">
               Doctor's Remarks & Clinical Guidance
             </label>
             <textarea
@@ -542,18 +524,18 @@ const ConsultationForm = () => {
               placeholder="Clinical recommendations, lifestyle advice, diet, hydration, or lab test requests..."
               value={formData.doctorNotes}
               onChange={(e) => setFormData({ ...formData, doctorNotes: e.target.value })}
-              className="w-full text-xs sm:text-sm p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+              className="w-full text-xs sm:text-sm p-3.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
             />
           </div>
 
-          <div className="pt-3 border-t border-slate-100 space-y-3">
-            <div className="flex items-center gap-2.5">
+          <div className="pt-3 border-t border-slate-200 space-y-3">
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
                 id="followUpRequired"
                 checked={formData.followUpRequired}
                 onChange={(e) => setFormData({ ...formData, followUpRequired: e.target.checked })}
-                className="w-4 h-4 text-teal-600 rounded-md border-slate-300 focus:ring-teal-500"
+                className="w-4 h-4 text-teal-600 rounded border-slate-300 focus:ring-teal-600"
               />
               <label htmlFor="followUpRequired" className="text-xs font-bold text-slate-800 cursor-pointer">
                 Patient requires follow-up clinic review visit
@@ -561,7 +543,7 @@ const ConsultationForm = () => {
             </div>
 
             {formData.followUpRequired && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pl-6 pt-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pl-6 pt-1">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
                     Scheduled Review Date
@@ -570,7 +552,7 @@ const ConsultationForm = () => {
                     type="date"
                     value={formData.followUpDate}
                     onChange={(e) => setFormData({ ...formData, followUpDate: e.target.value })}
-                    className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
                   />
                 </div>
                 <div>
@@ -582,7 +564,7 @@ const ConsultationForm = () => {
                     placeholder="e.g. Return in 3 days if symptoms persist; take full antibiotics course"
                     value={formData.followUpInstructions}
                     onChange={(e) => setFormData({ ...formData, followUpInstructions: e.target.value })}
-                    className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                    className="w-full text-xs sm:text-sm px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
                   />
                 </div>
               </div>
@@ -594,17 +576,16 @@ const ConsultationForm = () => {
         <div className="flex items-center justify-end gap-3 pt-2">
           <Link
             to="/doctor/appointments"
-            className="px-5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-2xl transition-colors"
+            className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors border border-slate-300"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saving}
-            className="px-7 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-xs hover:shadow transition-all flex items-center gap-2 disabled:opacity-50"
+            className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-xl shadow-xs transition-all disabled:opacity-50"
           >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>{saving ? 'Finalizing Record...' : 'Complete & Save Consultation'}</span>
+            {saving ? 'Finalizing Record...' : 'Complete & Save Consultation'}
           </button>
         </div>
       </form>

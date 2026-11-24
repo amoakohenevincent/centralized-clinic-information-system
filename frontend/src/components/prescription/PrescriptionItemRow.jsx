@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 
 const FREQUENCY_OPTIONS = [
   'Once daily (OD)',
@@ -15,10 +15,10 @@ const FREQUENCY_OPTIONS = [
 
 export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled = false }) => {
   return (
-    <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-xs space-y-3 relative hover:border-teal-200 transition-colors">
+    <div className="p-4 bg-white rounded-xl border border-slate-200 shadow-sm space-y-3 relative hover:border-teal-600 transition-colors">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="w-6 h-6 rounded-full bg-teal-100 text-teal-800 font-bold text-xs flex items-center justify-center shrink-0">
+          <span className="w-6 h-6 rounded-full bg-teal-600 text-white font-bold text-xs flex items-center justify-center shrink-0">
             {index + 1}
           </span>
           <div>
@@ -34,12 +34,9 @@ export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled 
           <button
             type="button"
             onClick={() => onRemove(index)}
-            className="text-slate-400 hover:text-rose-600 p-1 rounded-md hover:bg-rose-50 transition-colors"
-            title="Remove medication"
+            className="text-xs font-semibold px-2.5 py-1 rounded-lg border border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
+            Remove
           </button>
         )}
       </div>
@@ -48,8 +45,8 @@ export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled 
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
         {/* Dosage */}
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Dosage <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold text-slate-700 mb-1">
+            Dosage *
           </label>
           <input
             type="text"
@@ -57,21 +54,21 @@ export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled 
             value={item.dosage || ''}
             disabled={disabled}
             onChange={(e) => onChange(index, 'dosage', e.target.value)}
-            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
             required
           />
         </div>
 
         {/* Frequency */}
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Frequency <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold text-slate-700 mb-1">
+            Frequency *
           </label>
           <select
             value={item.frequency || FREQUENCY_OPTIONS[0]}
             disabled={disabled}
             onChange={(e) => onChange(index, 'frequency', e.target.value)}
-            className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
             required
           >
             {FREQUENCY_OPTIONS.map((f) => (
@@ -84,8 +81,8 @@ export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled 
 
         {/* Duration */}
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Duration <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold text-slate-700 mb-1">
+            Duration *
           </label>
           <input
             type="text"
@@ -93,15 +90,15 @@ export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled 
             value={item.duration || ''}
             disabled={disabled}
             onChange={(e) => onChange(index, 'duration', e.target.value)}
-            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
             required
           />
         </div>
 
         {/* Quantity */}
         <div>
-          <label className="block text-xs font-medium text-slate-600 mb-1">
-            Qty Prescribed <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold text-slate-700 mb-1">
+            Qty Prescribed *
           </label>
           <input
             type="number"
@@ -109,7 +106,7 @@ export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled 
             value={item.quantityPrescribed || ''}
             disabled={disabled}
             onChange={(e) => onChange(index, 'quantityPrescribed', parseInt(e.target.value, 10) || 1)}
-            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
             required
           />
         </div>
@@ -117,7 +114,7 @@ export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled 
 
       {/* Specific Instructions */}
       <div>
-        <label className="block text-xs font-medium text-slate-600 mb-1">
+        <label className="block text-xs font-bold text-slate-700 mb-1">
           Medication Instructions / Patient Counselling
         </label>
         <input
@@ -126,9 +123,10 @@ export const PrescriptionItemRow = ({ item, index, onChange, onRemove, disabled 
           value={item.instructions || ''}
           disabled={disabled}
           onChange={(e) => onChange(index, 'instructions', e.target.value)}
-          className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-teal-500"
+          className="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
         />
       </div>
     </div>
   );
 };
+export default PrescriptionItemRow;

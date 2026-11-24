@@ -1,20 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Calendar, User, ArrowRight, Activity, FileText } from 'lucide-react';
 import DiagnosisBadge from './DiagnosisBadge';
 import Badge from '../common/Badge';
 
 const ConsultationTimeline = ({ consultations = [] }) => {
   if (consultations.length === 0) {
     return (
-      <div className="text-center py-12 bg-white border border-dashed border-slate-200 rounded-3xl">
+      <div className="text-center py-10 bg-white border border-slate-200 rounded-2xl">
         <p className="text-xs text-slate-500 font-medium">No previous consultations recorded for this patient.</p>
       </div>
     );
   }
 
   return (
-    <div className="relative border-l-2 border-teal-200 ml-3.5 pl-6 space-y-6">
+    <div className="relative border-l-2 border-teal-600 ml-3 pl-5 space-y-5">
       {consultations.map((c, idx) => {
         const visitDate = new Date(c.consultationDate).toLocaleDateString('en-US', {
           year: 'numeric',
@@ -29,32 +28,30 @@ const ConsultationTimeline = ({ consultations = [] }) => {
           : 'Attending Physician';
 
         return (
-          <div key={c._id || idx} className="relative group">
+          <div key={c._id || idx} className="relative">
             {/* Round teal bullet */}
-            <div className="absolute -left-[31px] top-4 w-3.5 h-3.5 rounded-full bg-teal-500 ring-4 ring-white shadow-xs"></div>
+            <div className="absolute -left-[27px] top-4 w-3 h-3 rounded-full bg-teal-600 ring-4 ring-white" />
 
-            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card hover:border-teal-200 transition-all space-y-4">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-teal-600 transition-all space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2.5">
-                  <span className="font-mono text-xs font-bold text-teal-700 bg-teal-50 px-3 py-1 rounded-xl border border-teal-200">
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-xs font-bold text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-lg border border-teal-200">
                     {c.consultationNumber || `CNS-${idx + 1}`}
                   </span>
-                  <span className="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{visitDate}</span>
+                  <span className="text-xs font-semibold text-slate-600">
+                    {visitDate}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Badge variant={c.status === 'amended' ? 'amber' : 'completed'}>
+                  <Badge variant={c.status === 'amended' ? 'warning' : 'completed'}>
                     {c.status || 'completed'}
                   </Badge>
                   <Link
                     to={`/doctor/consultations/${c._id}`}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 hover:text-teal-700 bg-teal-50 hover:bg-teal-100/70 px-3 py-1 rounded-xl transition-all"
+                    className="text-xs font-bold text-teal-700 hover:text-teal-900 bg-teal-50 hover:bg-teal-100 px-3 py-1 rounded-lg border border-teal-200 transition-all"
                   >
-                    <span>View Notes</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    View Notes
                   </Link>
                 </div>
               </div>
@@ -64,13 +61,13 @@ const ConsultationTimeline = ({ consultations = [] }) => {
               </div>
 
               {c.clinicalObservations && (
-                <p className="text-xs text-slate-700 bg-slate-50 p-3.5 rounded-2xl border border-slate-100 line-clamp-2">
+                <p className="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border border-slate-200 line-clamp-2">
                   {c.clinicalObservations}
                 </p>
               )}
 
               {c.diagnoses && c.diagnoses.length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-1">
+                <div className="flex flex-wrap gap-1.5 pt-1">
                   {c.diagnoses.map((d, dIdx) => (
                     <DiagnosisBadge key={dIdx} diagnosis={d} />
                   ))}

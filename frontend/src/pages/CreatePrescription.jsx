@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '../components/common/Button';
 import { Alert } from '../components/common/Alert';
 import { PrescriptionItemRow } from '../components/prescription/PrescriptionItemRow';
@@ -7,7 +7,6 @@ import { HandoffConfirmation } from '../components/prescription/HandoffConfirmat
 import { prescriptionService } from '../services/prescriptionService';
 import { useAuth } from '../context/AuthContext';
 
-// Fictional clinical consultation contexts received from Module 2 (Clinical Records)
 const CLINICAL_CONSULTATION_STUBS = [
   {
     consultationId: 'con_001',
@@ -44,23 +43,19 @@ const CLINICAL_CONSULTATION_STUBS = [
 export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
   const { currentUser, isDoctor } = useAuth();
 
-  // Consultation context from Module 2
   const [selectedConsultation, setSelectedConsultation] = useState(CLINICAL_CONSULTATION_STUBS[0]);
 
-  // Prescription Form State
   const [clinicalDiagnosis, setClinicalDiagnosis] = useState(CLINICAL_CONSULTATION_STUBS[0].diagnosis);
   const [generalInstructions, setGeneralInstructions] = useState('');
   const [isControlledMedication, setIsControlledMedication] = useState(false);
   const [items, setItems] = useState([]);
 
-  // UI Modals & Validation States
   const [isCatalogueOpen, setIsCatalogueOpen] = useState(false);
   const [isHandoffOpen, setIsHandoffOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorFeedback, setErrorFeedback] = useState('');
   const [successFeedback, setSuccessFeedback] = useState('');
 
-  // Update diagnosis if consultation changes
   const handleConsultationChange = (conId) => {
     const found = CLINICAL_CONSULTATION_STUBS.find((c) => c.consultationId === conId);
     if (found) {
@@ -69,10 +64,8 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
     }
   };
 
-  // Add selected medicine from catalogue
   const handleSelectMedicine = (med) => {
     setErrorFeedback('');
-    // Check if medicine already added
     if (items.some((i) => i.medicineId === med._id)) {
       setErrorFeedback(`'${med.name}' is already added to this prescription.`);
       return;
@@ -97,20 +90,17 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
     setItems([...items, newItem]);
   };
 
-  // Item field change handler
   const handleItemChange = (index, field, value) => {
     const updated = [...items];
     updated[index] = { ...updated[index], [field]: value };
     setItems(updated);
   };
 
-  // Remove item
   const handleRemoveItem = (index) => {
     const updated = items.filter((_, idx) => idx !== index);
     setItems(updated);
   };
 
-  // Form validation before opening handoff sign-off
   const handleValidateAndProceed = (e) => {
     e.preventDefault();
     setErrorFeedback('');
@@ -138,7 +128,6 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
     setIsHandoffOpen(true);
   };
 
-  // Final confirmation & handoff execution
   const handleConfirmHandoff = async () => {
     setIsSubmitting(true);
     setErrorFeedback('');
@@ -177,25 +166,24 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
         <Alert
           type="error"
           title="Access Restricted"
-          message="Prescription authoring is restricted to authorized physicians. Switch your active simulation role to 'Doctor (MD)' in the top navbar to proceed."
+          message="Prescription authoring is restricted to authorized physicians. Switch your active simulation role to Doctor in the top navbar to proceed."
         />
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Page Header */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
-            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-            <span>Physician Prescription Authoring</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-teal-800 bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200 inline-block mb-1">
+            Physician Prescription Authoring
+          </span>
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Create Clinical Prescription
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Author medications following patient clinical consultation with verified stock and allergy screening.
           </p>
         </div>
@@ -219,23 +207,23 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
         <Alert type="error" title="Submission Error" message={errorFeedback} onDismiss={() => setErrorFeedback('')} />
       )}
 
-      {/* 1. Patient & Consultation Link (Integration Context) */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-3">
+      {/* 1. Patient & Consultation Link */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 gap-3">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-teal-500" />
-            <h3 className="text-base font-bold text-slate-900">
-              Clinical Consultation Context (Inbound: Module 2)
+            <span className="w-2.5 h-2.5 rounded-full bg-teal-600" />
+            <h3 className="text-sm sm:text-base font-bold text-slate-900">
+              Clinical Consultation Context
             </h3>
           </div>
 
           {/* Quick Consultation Picker */}
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500">Select Queue Patient:</span>
+            <span className="text-slate-500">Select Patient:</span>
             <select
               value={selectedConsultation.consultationId}
               onChange={(e) => handleConsultationChange(e.target.value)}
-              className="px-2.5 py-1 border border-slate-300 rounded-lg bg-slate-50 text-slate-800 font-medium text-xs focus:ring-2 focus:ring-teal-500"
+              className="px-2.5 py-1 border border-slate-300 rounded-lg bg-slate-50 text-slate-800 font-semibold text-xs focus:ring-2 focus:ring-teal-600"
             >
               {CLINICAL_CONSULTATION_STUBS.map((c) => (
                 <option key={c.consultationId} value={c.consultationId}>
@@ -247,67 +235,62 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
         </div>
 
         {/* Patient Details Snapshot Card */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 text-xs">
           <div>
-            <span className="text-slate-400 block mb-0.5">Patient Name</span>
+            <span className="text-slate-500 block mb-0.5">Patient Name</span>
             <span className="font-semibold text-slate-900 text-sm">{selectedConsultation.patientName}</span>
           </div>
           <div>
-            <span className="text-slate-400 block mb-0.5">Student/Staff ID</span>
+            <span className="text-slate-500 block mb-0.5">Student/Staff ID</span>
             <span className="font-mono font-medium text-slate-800">{selectedConsultation.patientIdentifier}</span>
           </div>
           <div>
-            <span className="text-slate-400 block mb-0.5">Demographics</span>
+            <span className="text-slate-500 block mb-0.5">Demographics</span>
             <span className="font-medium text-slate-800">
               {selectedConsultation.age} yrs • {selectedConsultation.gender}
             </span>
           </div>
           <div>
-            <span className="text-slate-400 block mb-0.5">Consultation Ref</span>
+            <span className="text-slate-500 block mb-0.5">Consultation Ref</span>
             <span className="font-mono text-slate-700">{selectedConsultation.consultationId}</span>
           </div>
         </div>
 
         {/* Allergy Warning Alert */}
         {selectedConsultation.allergies && (
-          <div className="p-3 bg-amber-50 rounded-lg border border-amber-200 flex items-center gap-2.5 text-xs text-amber-900">
-            <svg className="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <div>
-              <span className="font-bold">Known Drug Allergies: </span>
-              {selectedConsultation.allergies.join(', ')}
-            </div>
+          <div className="p-3.5 bg-slate-900 rounded-xl text-xs text-white">
+            <span className="font-bold text-teal-300">Known Drug Allergies: </span>
+            <span>{selectedConsultation.allergies.join(', ')}</span>
           </div>
         )}
       </div>
 
       {/* 2. Clinical Notes & Diagnosis */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
-        <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-3">
+        <h3 className="text-sm sm:text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
           Clinical Indication
         </h3>
         <div>
-          <label className="block text-xs font-bold text-slate-700 mb-1.5">
-            Clinical Diagnosis / Reason for Prescription <span className="text-rose-500">*</span>
+          <label className="block text-xs font-bold text-slate-700 mb-1">
+            Clinical Diagnosis / Reason for Prescription *
           </label>
           <input
             type="text"
             value={clinicalDiagnosis}
             onChange={(e) => setClinicalDiagnosis(e.target.value)}
-            className="w-full px-4 py-2.5 border border-slate-200 rounded-2xl text-xs sm:text-sm bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+            className="w-full px-3.5 py-2.5 border border-slate-300 rounded-xl text-xs sm:text-sm bg-slate-50 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-600"
             required
           />
         </div>
       </div>
 
       {/* 3. Prescribed Medications Builder */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200 pb-3 gap-2">
           <div>
-            <h3 className="text-base font-bold text-slate-900">Prescribed Medications</h3>
+            <h3 className="text-sm sm:text-base font-bold text-slate-900">Prescribed Medications</h3>
             <p className="text-xs text-slate-500">
-              Select verified medicines from the shared Pharmacy Catalogue (Module 4)
+              Select verified medicines from the shared Pharmacy Catalogue
             </p>
           </div>
 
@@ -317,24 +300,26 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
             size="sm"
             onClick={() => setIsCatalogueOpen(true)}
           >
-            + Add Medicine from Catalogue
+            Add Medicine from Catalogue
           </Button>
         </div>
 
         {items.length === 0 ? (
-          <div className="p-12 border-2 border-dashed border-slate-200 rounded-3xl text-center space-y-3">
-            <div className="text-slate-500 text-sm font-bold">No medications added yet</div>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          <div className="p-10 border border-slate-200 rounded-xl text-center space-y-2 bg-slate-50">
+            <div className="text-slate-800 text-sm font-bold">No medications added yet</div>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
               Click the button below to browse available medicines and specify dosages.
             </p>
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              onClick={() => setIsCatalogueOpen(true)}
-            >
-              Open Medicine Catalogue
-            </Button>
+            <div className="pt-2">
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={() => setIsCatalogueOpen(true)}
+              >
+                Open Medicine Catalogue
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="space-y-3">
@@ -351,14 +336,14 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
         )}
       </div>
 
-      {/* 4. General Patient Instructions & Controlled Substance Flag */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
-        <h3 className="text-base font-bold text-slate-900 border-b border-slate-100 pb-2">
+      {/* 4. General Patient Instructions */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-4">
+        <h3 className="text-sm sm:text-base font-bold text-slate-900 border-b border-slate-200 pb-2">
           General Instructions & Sign-Off
         </h3>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700 mb-1">
+          <label className="block text-xs font-bold text-slate-700 mb-1">
             General Patient Advice & Prescription Notes
           </label>
           <textarea
@@ -366,22 +351,22 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
             placeholder="e.g., Drink at least 2 litres of water daily. Return to clinic if fever persists beyond 72 hours."
             value={generalInstructions}
             onChange={(e) => setGeneralInstructions(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500"
+            className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
           />
         </div>
 
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
           <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
             <input
               type="checkbox"
               checked={isControlledMedication}
               onChange={(e) => setIsControlledMedication(e.target.checked)}
-              className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+              className="rounded border-slate-300 text-teal-600 focus:ring-teal-600"
             />
             <span>Mark as Controlled Substance (Requires physical ID verification at pharmacy)</span>
           </label>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <Button variant="secondary" size="md" onClick={() => onNavigate('dashboard')}>
               Cancel
             </Button>
@@ -391,7 +376,7 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
               disabled={items.length === 0}
               onClick={handleValidateAndProceed}
             >
-              Review & Submit to Pharmacy →
+              Review & Submit to Pharmacy
             </Button>
           </div>
         </div>
@@ -420,3 +405,5 @@ export const CreatePrescription = ({ onNavigate, onCreatedSuccess }) => {
     </div>
   );
 };
+
+export default CreatePrescription;

@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { Alert } from '../components/common/Alert';
@@ -7,7 +7,7 @@ import { prescriptionService } from '../services/prescriptionService';
 import { useAuth } from '../context/AuthContext';
 
 export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess }) => {
-  const { isDoctor, currentUser } = useAuth();
+  const { isDoctor } = useAuth();
   const [currentRx, setCurrentRx] = useState(prescription);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editReason, setEditReason] = useState('');
@@ -28,7 +28,6 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
 
   const isPending = currentRx.status === 'pending';
 
-  // Controlled update before dispensing
   const handleSaveUpdate = async () => {
     if (!editReason || editReason.trim().length < 5) {
       setFeedback({ type: 'error', message: 'A valid clinical reason (min 5 characters) is required for audit logging.' });
@@ -52,7 +51,6 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
     }
   };
 
-  // Pre-dispense cancellation
   const handleCancel = async () => {
     if (!window.confirm('Are you sure you want to cancel this prescription before dispensing? This action is recorded in the audit trail.')) {
       return;
@@ -70,12 +68,12 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 animate-fadeIn">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Action Header */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-5 sm:p-7 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Button variant="secondary" size="sm" onClick={() => onNavigate('dashboard')}>
-            ← Back
+            Back
           </Button>
           <div>
             <h2 className="text-xl font-bold text-slate-900">
@@ -108,7 +106,7 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
       )}
 
       {/* Main Printable Clinic Rx Card */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-card space-y-6 printable-area">
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6 printable-area">
         {/* Clinic Header */}
         <div className="flex justify-between items-start border-b-2 border-teal-700 pb-4">
           <div>
@@ -138,19 +136,19 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
         </div>
 
         {/* Patient & Doctor Credentials Banner */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
           <div>
-            <span className="text-slate-400 block text-[11px]">Patient Name</span>
+            <span className="text-slate-500 block text-[11px]">Patient Name</span>
             <span className="font-bold text-slate-900 text-sm">{currentRx.patientName}</span>
             <div className="font-mono text-slate-500 text-[11px] mt-0.5">{currentRx.patientIdentifier}</div>
           </div>
           <div>
-            <span className="text-slate-400 block text-[11px]">Prescribing Physician</span>
+            <span className="text-slate-500 block text-[11px]">Prescribing Physician</span>
             <span className="font-semibold text-slate-800">{currentRx.doctorName}</span>
             <div className="text-slate-500 text-[11px] mt-0.5">Authorized Medical Officer</div>
           </div>
           <div>
-            <span className="text-slate-400 block text-[11px]">Consultation Ref</span>
+            <span className="text-slate-500 block text-[11px]">Consultation Ref</span>
             <span className="font-mono text-slate-700">{currentRx.consultationId || 'Direct Consultation'}</span>
             <div className="text-slate-500 text-[11px] mt-0.5">
               Diagnosis: <span className="font-medium text-slate-800">{currentRx.clinicalDiagnosis || 'N/A'}</span>
@@ -160,12 +158,12 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
 
         {/* Medication Schedule Table */}
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
             Prescribed Medications & Dosage Schedule
           </h3>
-          <div className="border border-slate-200 rounded-lg overflow-hidden">
+          <div className="border border-slate-200 rounded-xl overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200 text-[11px]">
+              <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200 text-[11px] uppercase tracking-wider">
                 <tr>
                   <th className="px-4 py-3">#</th>
                   <th className="px-4 py-3">Medication Name & Strength</th>
@@ -175,10 +173,10 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
                   <th className="px-4 py-3">Instructions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-200">
                 {currentRx.items?.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50">
-                    <td className="px-4 py-3 font-semibold text-slate-400">{idx + 1}</td>
+                  <tr key={idx} className="hover:bg-slate-50">
+                    <td className="px-4 py-3 font-semibold text-slate-500">{idx + 1}</td>
                     <td className="px-4 py-3">
                       <div className="font-bold text-slate-900">{item.medicineName}</div>
                       <div className="text-[11px] text-slate-500">
@@ -187,7 +185,7 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
                     </td>
                     <td className="px-4 py-3 font-medium text-slate-800">
                       <div>{item.dosage}</div>
-                      <div className="text-[11px] text-teal-700 font-semibold">{item.frequency}</div>
+                      <div className="text-[11px] text-teal-800 font-semibold">{item.frequency}</div>
                     </td>
                     <td className="px-4 py-3 text-slate-700">{item.duration}</td>
                     <td className="px-4 py-3 font-mono font-bold text-slate-900">
@@ -205,23 +203,23 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
 
         {/* General Instructions */}
         {currentRx.generalInstructions && (
-          <div className="bg-teal-50/50 border border-teal-100 rounded-lg p-3 text-xs">
+          <div className="bg-teal-50 border border-teal-200 rounded-xl p-3 text-xs">
             <span className="font-bold text-teal-900 block mb-0.5">Doctor's Advice to Patient:</span>
-            <p className="text-slate-700">{currentRx.generalInstructions}</p>
+            <p className="text-slate-800">{currentRx.generalInstructions}</p>
           </div>
         )}
 
         {/* Controlled Updates / Management Actions (Before Dispensing) */}
         {isDoctor && (
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-            <div className="text-xs text-slate-500">
+          <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="text-xs text-slate-600">
               {isPending ? (
-                <span className="text-emerald-700 font-medium">
-                  ● Status is Pending: Controlled updates or cancellation are permitted before pharmacy dispensing.
+                <span className="text-teal-800 font-semibold">
+                  Status is Pending: Controlled updates or cancellation are permitted before pharmacy dispensing.
                 </span>
               ) : (
-                <span className="text-slate-400">
-                  🔒 Locked: Prescription modifications are prohibited once pharmacy dispensing has commenced.
+                <span className="text-slate-500 font-medium">
+                  Locked: Prescription modifications are prohibited once pharmacy dispensing has commenced.
                 </span>
               )}
             </div>
@@ -249,18 +247,18 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
 
         {/* Audit Trail Section */}
         {currentRx.auditTrail && currentRx.auditTrail.length > 0 && (
-          <div className="pt-4 border-t border-slate-100 space-y-2">
-            <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+          <div className="pt-4 border-t border-slate-200 space-y-2">
+            <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-600">
               Clinical Audit History
             </h4>
             <div className="space-y-1.5 text-xs text-slate-600">
               {currentRx.auditTrail.map((entry, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-slate-50 p-2 rounded border border-slate-100">
+                <div key={idx} className="flex items-center justify-between bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                   <span>
-                    <strong className="text-slate-800 capitalize">{entry.action.replace('_', ' ')}</strong>
-                    {entry.reason && <span className="text-slate-500"> — {entry.reason}</span>}
+                    <strong className="text-slate-900 capitalize">{entry.action.replace('_', ' ')}</strong>
+                    {entry.reason && <span className="text-slate-600"> — {entry.reason}</span>}
                   </span>
-                  <span className="text-[11px] text-slate-400 font-mono">
+                  <span className="text-[11px] text-slate-500 font-mono">
                     {new Date(entry.modifiedAt).toLocaleString()}
                   </span>
                 </div>
@@ -284,28 +282,28 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
           />
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
-              Clinical Reason for Modification <span className="text-rose-500">*</span>
+            <label className="block text-xs font-bold text-slate-700 mb-1">
+              Clinical Reason for Modification *
             </label>
             <input
               type="text"
               placeholder="e.g., Adjusted instructions following lab sensitivity report"
               value={editReason}
               onChange={(e) => setEditReason(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500"
+              className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+            <label className="block text-xs font-bold text-slate-700 mb-1">
               General Patient Instructions
             </label>
             <textarea
               rows="3"
               value={editInstructions}
               onChange={(e) => setEditInstructions(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500"
+              className="w-full px-3.5 py-2 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
             />
           </div>
 
@@ -322,3 +320,5 @@ export const PrescriptionDetails = ({ prescription, onNavigate, onUpdateSuccess 
     </div>
   );
 };
+
+export default PrescriptionDetails;

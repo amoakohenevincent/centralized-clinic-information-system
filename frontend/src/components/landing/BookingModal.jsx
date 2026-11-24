@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, User, CheckCircle2, AlertCircle } from 'lucide-react';
 import api from '../../services/api';
 
 const dateOnly = (date) => {
@@ -8,7 +7,6 @@ const dateOnly = (date) => {
 };
 
 export default function BookingModal({ isOpen, onClose }) {
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     patientName: '',
     phone: '',
@@ -40,7 +38,6 @@ export default function BookingModal({ isOpen, onClose }) {
     setSubmitting(true);
     setError('');
     try {
-      // Calculate ISO date
       const [timePart, ampm] = formData.time.split(' ');
       let [hours, minutes] = timePart.split(':').map(Number);
       if (ampm === 'PM' && hours < 12) hours += 12;
@@ -48,7 +45,6 @@ export default function BookingModal({ isOpen, onClose }) {
 
       const appointmentDate = new Date(`${formData.date}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00.000Z`);
 
-      // Try booking via API or store confirmed
       try {
         await api.post('/appointments', {
           doctorId: formData.doctorId,
@@ -58,7 +54,6 @@ export default function BookingModal({ isOpen, onClose }) {
           phone: formData.phone,
         });
       } catch (err) {
-        // Fallback for demo when backend is offline
         console.warn('Backend not responding to appointment request, confirming locally:', err);
       }
 
@@ -71,38 +66,38 @@ export default function BookingModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-lg overflow-hidden animate-scaleUp">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-lg overflow-hidden max-h-[90vh] flex flex-col">
         
         {/* Modal Header */}
-        <div className="px-6 py-5 bg-gradient-to-r from-teal-600 to-cyan-600 text-white flex items-center justify-between">
+        <div className="px-5 py-4 bg-teal-700 text-white flex items-center justify-between shrink-0">
           <div>
-            <h3 className="font-extrabold text-lg">Book Your Medical Appointment</h3>
+            <h3 className="font-extrabold text-base sm:text-lg">Book Your Medical Appointment</h3>
             <p className="text-xs text-teal-100">Schedule your consultation with top specialists</p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
+            className="px-2.5 py-1 rounded-lg border border-teal-500 bg-teal-800 text-xs font-semibold hover:bg-teal-900 transition-colors"
           >
-            <X className="w-4 h-4" />
+            Close
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6">
+        <div className="p-5 sm:p-6 overflow-y-auto flex-1">
           {confirmed ? (
             <div className="py-6 text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-teal-100 text-teal-600 mx-auto flex items-center justify-center">
-                <CheckCircle2 className="w-10 h-10" />
-              </div>
+              <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200 uppercase tracking-wider">
+                Confirmed
+              </span>
               <h4 className="text-xl font-bold text-slate-900">Appointment Confirmed!</h4>
               <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-                Thank you, <span className="font-semibold text-slate-900">{formData.patientName}</span>. Your appointment with <span className="font-semibold text-slate-900">{formData.doctorName}</span> is scheduled for <span className="font-semibold text-teal-600">{formData.date} at {formData.time}</span>.
+                Thank you, <span className="font-semibold text-slate-900">{formData.patientName}</span>. Your appointment with <span className="font-semibold text-slate-900">{formData.doctorName}</span> is scheduled for <span className="font-semibold text-teal-700">{formData.date} at {formData.time}</span>.
               </p>
               <div className="pt-4">
                 <button
                   onClick={() => { setConfirmed(false); onClose(); }}
-                  className="px-6 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-semibold text-sm transition-all"
+                  className="px-6 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition-all"
                 >
                   Done
                 </button>
@@ -111,8 +106,8 @@ export default function BookingModal({ isOpen, onClose }) {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4" /> {error}
+                <div className="p-3 bg-slate-900 text-white text-xs rounded-xl font-semibold">
+                  {error}
                 </div>
               )}
 
@@ -124,7 +119,7 @@ export default function BookingModal({ isOpen, onClose }) {
                   placeholder="e.g. Jordan Mensah"
                   value={formData.patientName}
                   onChange={(e) => setFormData({ ...formData, patientName: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                 />
               </div>
 
@@ -136,7 +131,7 @@ export default function BookingModal({ isOpen, onClose }) {
                   placeholder="+1 (555) 000-0000"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                 />
               </div>
 
@@ -148,7 +143,7 @@ export default function BookingModal({ isOpen, onClose }) {
                     const doc = doctors.find((d) => d.id === e.target.value);
                     setFormData({ ...formData, doctorId: e.target.value, doctorName: doc?.name || '' });
                   }}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-teal-500 bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600 bg-white"
                 >
                   {doctors.map((d) => (
                     <option key={d.id} value={d.id}>
@@ -158,7 +153,7 @@ export default function BookingModal({ isOpen, onClose }) {
                 </select>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">Visit Date</label>
                   <input
@@ -167,7 +162,7 @@ export default function BookingModal({ isOpen, onClose }) {
                     min={dateOnly(new Date())}
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-teal-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                   />
                 </div>
                 <div>
@@ -175,7 +170,7 @@ export default function BookingModal({ isOpen, onClose }) {
                   <select
                     value={formData.time}
                     onChange={(e) => setFormData({ ...formData, time: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-teal-500 bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600 bg-white"
                   >
                     {timeSlots.map((time) => (
                       <option key={time} value={time}>{time}</option>
@@ -191,14 +186,14 @@ export default function BookingModal({ isOpen, onClose }) {
                   placeholder="e.g. Routine checkup, fever, prescription refill"
                   value={formData.reason}
                   onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:border-teal-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full mt-4 py-3 rounded-xl bg-teal-500 hover:bg-teal-600 text-white font-bold text-sm shadow-md shadow-teal-500/25 transition-all disabled:opacity-50 cursor-pointer"
+                className="w-full mt-2 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm transition-all disabled:opacity-50"
               >
                 {submitting ? 'Confirming...' : 'Confirm Appointment'}
               </button>
@@ -209,4 +204,3 @@ export default function BookingModal({ isOpen, onClose }) {
     </div>
   );
 }
-

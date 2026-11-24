@@ -1,5 +1,4 @@
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function ServicesSection({ onServiceSelect }) {
@@ -39,40 +38,40 @@ export default function ServicesSection({ onServiceSelect }) {
   ];
 
   return (
-    <section id="services" className="py-16 bg-white">
+    <section id="services" className="py-16 bg-white border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Heading */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="text-center max-w-2xl mx-auto mb-10">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Our <span className="text-teal-600">Healthcare</span> Services
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-500">
+          <p className="mt-2 text-sm sm:text-base text-slate-500">
             Comprehensive healthcare solutions for you and your family.
           </p>
         </div>
 
         {/* 5 Services Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
           {services.map((item, idx) => (
             <div
               key={idx}
               onClick={item.action}
-              className="group bg-white rounded-2xl border border-slate-100 hover:border-teal-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer"
+              className="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 overflow-hidden shadow-sm hover:shadow transition-all flex flex-col cursor-pointer"
             >
               {/* Card Thumbnail Image */}
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                 <img
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
 
               {/* Card Body */}
               <div className="p-4 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="font-bold text-base text-slate-900 group-hover:text-teal-600 transition-colors">
+                  <h3 className="font-bold text-base text-slate-900 group-hover:text-teal-700 transition-colors">
                     {item.title}
                   </h3>
                   <p className="text-xs text-slate-500 mt-1 leading-snug">
@@ -80,11 +79,10 @@ export default function ServicesSection({ onServiceSelect }) {
                   </p>
                 </div>
 
-                {/* Circle Arrow Button (matches uploaded design) */}
                 <div className="mt-4 flex justify-end">
-                  <div className="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center shadow-sm group-hover:bg-teal-600 transition-all group-hover:scale-110">
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
+                  <span className="text-xs font-bold text-teal-700 group-hover:underline">
+                    View Service
+                  </span>
                 </div>
               </div>
             </div>
@@ -95,4 +93,3 @@ export default function ServicesSection({ onServiceSelect }) {
     </section>
   );
 }
-

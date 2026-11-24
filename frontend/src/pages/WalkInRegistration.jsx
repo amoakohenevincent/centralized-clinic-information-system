@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { UserPlus, Search, CheckCircle2, AlertCircle, Phone, Calendar, User, ArrowRight, ShieldCheck } from 'lucide-react';
 import api from '../services/api';
 
 const dateOnly = (date) => {
@@ -74,21 +73,19 @@ export default function WalkInRegistration() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-200">
-          <ShieldCheck className="w-4 h-4 text-teal-600" />
+        <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 bg-slate-50 px-3.5 py-2 rounded-2xl border border-slate-200">
           <span>Patient Intake Module</span>
         </div>
       </div>
 
       {createdPatient && (
-        <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-3xl text-emerald-800 text-xs space-y-1">
-          <div className="flex items-center gap-2 font-bold text-sm">
-            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-            <span>Walk-in Profile Registered Successfully!</span>
+        <div className="p-5 bg-teal-50 border border-teal-200 rounded-3xl text-teal-900 text-xs space-y-1">
+          <div className="font-bold text-sm">
+            Walk-in Profile Registered Successfully
           </div>
-          <p className="font-medium text-slate-700 pl-7">
+          <p className="font-medium text-slate-700">
             Patient: <strong className="text-slate-900">{createdPatient.legalName}</strong> | Clinic ID:{' '}
-            <span className="font-mono font-bold text-teal-700 bg-white px-2 py-0.5 rounded-lg border border-teal-200">
+            <span className="font-mono font-bold text-teal-800 bg-white px-2 py-0.5 rounded-lg border border-teal-200">
               {createdPatient.patientNumber || createdPatient.patientId}
             </span>
           </p>
@@ -96,26 +93,21 @@ export default function WalkInRegistration() {
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs font-bold flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" /> {error}
+        <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl text-white text-xs font-bold">
+          Notice: {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Step 1: Search Existing Records */}
         <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-            <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
-              <Search className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-900">
-                1. Search Existing Patient Directory
-              </h2>
-              <p className="text-xs text-slate-500">
-                Prevent duplicate IDs by searching legal name, patient ID, or phone number.
-              </p>
-            </div>
+          <div className="pb-3 border-b border-slate-100">
+            <h2 className="text-base font-bold text-slate-900">
+              1. Search Existing Patient Directory
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Prevent duplicate IDs by searching legal name, patient ID, or phone number.
+            </p>
           </div>
 
           <form onSubmit={handleSearch} className="flex gap-2">
@@ -125,9 +117,8 @@ export default function WalkInRegistration() {
                 placeholder="Search name, CCIS-PT-..., or phone number..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-2xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
+                className="w-full px-3.5 py-2.5 text-xs sm:text-sm border border-slate-200 rounded-2xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
               />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </div>
             <button
               type="submit"
@@ -146,7 +137,7 @@ export default function WalkInRegistration() {
                     <p className="font-bold text-slate-900">{p.preferredName || p.legalName}</p>
                     <p className="text-slate-500 font-mono mt-0.5">{p.patientNumber || p.patientId} · {p.phone || 'No phone'}</p>
                   </div>
-                  <span className="text-xs font-bold text-teal-600 bg-teal-50 px-2.5 py-1 rounded-xl">
+                  <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-xl border border-teal-200">
                     Existing Record
                   </span>
                 </div>
@@ -161,18 +152,13 @@ export default function WalkInRegistration() {
 
         {/* Step 2: Register Walk-In */}
         <div className="bg-white rounded-3xl border border-slate-100 p-6 sm:p-8 shadow-card space-y-4">
-          <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-            <div className="w-8 h-8 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
-              <UserPlus className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-slate-900">
-                2. Onboard New Walk-in Patient
-              </h2>
-              <p className="text-xs text-slate-500">
-                Collect essential contact and demographic details for immediate clinic triage.
-              </p>
-            </div>
+          <div className="pb-3 border-b border-slate-100">
+            <h2 className="text-base font-bold text-slate-900">
+              2. Onboard New Walk-in Patient
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Collect essential contact and demographic details for immediate clinic triage.
+            </p>
           </div>
 
           <form onSubmit={handleCreateWalkIn} className="space-y-4 text-xs">
@@ -189,7 +175,7 @@ export default function WalkInRegistration() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block font-bold text-slate-700 mb-1">Preferred Name</label>
                 <input
@@ -242,10 +228,9 @@ export default function WalkInRegistration() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-xs transition-all disabled:opacity-50"
             >
-              <UserPlus className="w-4 h-4" />
-              <span>{submitting ? 'Registering Patient...' : 'Create & Check-in Walk-in Profile'}</span>
+              {submitting ? 'Registering Patient...' : 'Create & Check-in Walk-in Profile'}
             </button>
           </form>
         </div>

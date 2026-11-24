@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Calendar, Clock, User, CheckCircle2, Play, AlertCircle, ArrowRight, RotateCw, Filter } from 'lucide-react';
 import api from '../services/api';
-import Badge from '../components/common/Badge';
+import { Badge } from '../components/common/Badge';
 
 const dateOnly = (date) => {
   const local = new Date(date);
@@ -59,7 +58,7 @@ export default function DailySchedule() {
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-2">
-            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-teal-500" />
             <span>Reception & Patient Operations</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -72,7 +71,6 @@ export default function DailySchedule() {
 
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2.5 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-200 text-xs">
-            <Calendar className="w-4 h-4 text-teal-600 shrink-0" />
             <span className="font-bold text-slate-700">Date:</span>
             <input
               type="date"
@@ -84,23 +82,22 @@ export default function DailySchedule() {
 
           <button
             onClick={loadSchedule}
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-xs transition-all"
+            className="px-4 py-2 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-2xl shadow-xs transition-all"
           >
-            <RotateCw className="w-3.5 h-3.5" />
-            <span>Refresh</span>
+            Refresh
           </button>
         </div>
       </div>
 
       {actionSuccess && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800 text-xs font-bold flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> {actionSuccess}
+        <div className="p-4 bg-teal-50 border border-teal-200 rounded-2xl text-teal-900 text-xs font-bold">
+          {actionSuccess}
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl text-rose-800 text-xs font-bold flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" /> {error}
+        <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl text-white text-xs font-bold">
+          Notice: {error}
         </div>
       )}
 
@@ -117,9 +114,6 @@ export default function DailySchedule() {
           <div className="p-16 text-center text-xs text-slate-500">Loading daily schedule...</div>
         ) : appointments.length === 0 ? (
           <div className="p-16 text-center">
-            <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
-              <Calendar className="w-6 h-6" />
-            </div>
             <h4 className="text-base font-bold text-slate-900">No appointments scheduled for this date</h4>
             <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
               Select another calendar date or register a new walk-in patient from the Walk-In Desk.
@@ -134,7 +128,7 @@ export default function DailySchedule() {
               return (
                 <div key={item._id} className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/70 transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-2xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-xs shrink-0">
+                    <div className="w-10 h-10 rounded-2xl bg-teal-50 text-teal-800 border border-teal-200 flex items-center justify-center font-bold text-xs shrink-0">
                       {initials}
                     </div>
                     <div>
@@ -142,16 +136,16 @@ export default function DailySchedule() {
                         <p className="font-bold text-sm text-slate-900">
                           {patientName}
                         </p>
-                        <span className="text-xs font-mono font-semibold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-200">
+                        <span className="text-xs font-mono font-semibold text-teal-800 bg-teal-50 px-2 py-0.5 rounded-lg border border-teal-200">
                           {item.patientId?.patientNumber || item.appointmentNumber || 'WALK-IN'}
                         </span>
                       </div>
                       <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 mt-1 font-medium">
-                        <span className="flex items-center gap-1 text-slate-700">
-                          <Clock className="w-3.5 h-3.5 text-slate-400" /> {formatDate(item.startsAt || item.appointmentDate)}
+                        <span className="text-slate-700">
+                          Time: {formatDate(item.startsAt || item.appointmentDate)}
                         </span>
-                        <span className="flex items-center gap-1">
-                          <User className="w-3.5 h-3.5 text-slate-400" /> Clinician: {item.doctorId?.name || item.doctorId || 'General Medical Officer'}
+                        <span>
+                          Clinician: {item.doctorId?.name || item.doctorId || 'General Medical Officer'}
                         </span>
                         {item.patientId?.phone && <span>Tel: {item.patientId.phone}</span>}
                       </div>
@@ -165,7 +159,7 @@ export default function DailySchedule() {
                       {(item.status === 'booked' || item.status === 'scheduled') && (
                         <button
                           onClick={() => handleStatusChange(item._id, 'checked_in')}
-                          className="px-3.5 py-1.5 text-xs font-bold bg-amber-500 hover:bg-amber-600 text-white rounded-xl shadow-xs transition-all"
+                          className="px-3.5 py-1.5 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow-xs transition-all"
                         >
                           Check-in Patient
                         </button>
@@ -173,19 +167,17 @@ export default function DailySchedule() {
                       {(item.status === 'checked_in' || item.status === 'checked-in') && (
                         <button
                           onClick={() => handleStatusChange(item._id, 'in_consultation')}
-                          className="px-3.5 py-1.5 text-xs font-bold bg-purple-600 hover:bg-purple-700 text-white rounded-xl shadow-xs transition-all flex items-center gap-1.5"
+                          className="px-3.5 py-1.5 text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-xs transition-all"
                         >
-                          <Play className="w-3 h-3 fill-white" />
-                          <span>Send to Doctor</span>
+                          Send to Doctor
                         </button>
                       )}
                       {(item.status === 'in_consultation' || item.status === 'in-consultation') && (
                         <button
                           onClick={() => handleStatusChange(item._id, 'completed')}
-                          className="px-3.5 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-xs transition-all flex items-center gap-1.5"
+                          className="px-3.5 py-1.5 text-xs font-bold bg-teal-700 hover:bg-teal-800 text-white rounded-xl shadow-xs transition-all"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>Complete Visit</span>
+                          Complete Visit
                         </button>
                       )}
                     </div>

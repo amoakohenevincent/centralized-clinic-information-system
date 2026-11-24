@@ -1,5 +1,4 @@
 import React from 'react';
-import { X, Star, Calendar, MapPin, Award } from 'lucide-react';
 
 export default function FindDoctorModal({ isOpen, onClose, onBookWithDoctor }) {
   if (!isOpen) return null;
@@ -11,7 +10,7 @@ export default function FindDoctorModal({ isOpen, onClose, onBookWithDoctor }) {
       title: 'Senior Physician & Medical Director',
       specialty: 'Internal Medicine',
       experience: '14+ years experience',
-      rating: 4.9,
+      rating: '4.9 / 5.0',
       reviews: 128,
       education: 'Harvard Medical School · MD',
       availability: 'Available Today',
@@ -23,7 +22,7 @@ export default function FindDoctorModal({ isOpen, onClose, onBookWithDoctor }) {
       title: 'Consultant Cardiologist',
       specialty: 'Cardiology & Heart Health',
       experience: '11+ years experience',
-      rating: 4.8,
+      rating: '4.8 / 5.0',
       reviews: 94,
       education: 'Johns Hopkins University · FACC',
       availability: 'Available Tomorrow',
@@ -35,7 +34,7 @@ export default function FindDoctorModal({ isOpen, onClose, onBookWithDoctor }) {
       title: 'Chief Pediatrician',
       specialty: 'Pediatrics & Neonatal Care',
       experience: '9+ years experience',
-      rating: 4.9,
+      rating: '4.9 / 5.0',
       reviews: 156,
       education: 'Oxford University Medical Sciences',
       availability: 'Available Today',
@@ -44,46 +43,44 @@ export default function FindDoctorModal({ isOpen, onClose, onBookWithDoctor }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fadeIn">
-      <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-2xl overflow-hidden animate-scaleUp">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs">
+      <div className="bg-white rounded-2xl shadow-xl border border-slate-200 w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-5 bg-gradient-to-r from-teal-600 to-cyan-600 text-white flex items-center justify-between">
+        <div className="px-5 py-4 bg-teal-700 text-white flex items-center justify-between shrink-0">
           <div>
-            <h3 className="font-extrabold text-lg">Our Clinic Specialists</h3>
+            <h3 className="font-extrabold text-base sm:text-lg">Our Clinic Specialists</h3>
             <p className="text-xs text-teal-100">Board-certified physicians ready to provide premier care</p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors text-white"
+            className="px-2.5 py-1 rounded-lg border border-teal-500 bg-teal-800 text-xs font-semibold hover:bg-teal-900 transition-colors"
           >
-            <X className="w-4 h-4" />
+            Close
           </button>
         </div>
 
         {/* Doctor Cards */}
-        <div className="p-6 divide-y divide-slate-100 max-h-[75vh] overflow-y-auto space-y-4">
+        <div className="p-5 sm:p-6 divide-y divide-slate-200 overflow-y-auto space-y-4 flex-1">
           {doctors.map((doc) => (
             <div key={doc.id} className="pt-4 first:pt-0 flex flex-col sm:flex-row items-center sm:items-start gap-4">
               <img
                 src={doc.image}
                 alt={doc.name}
-                className="w-20 h-20 rounded-2xl object-cover object-top border border-slate-100 shadow-sm shrink-0"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover object-top border border-slate-200 shrink-0"
               />
               <div className="flex-1 text-center sm:text-left">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <h4 className="font-extrabold text-slate-900 text-base">{doc.name}</h4>
-                  <div className="flex items-center gap-1 text-amber-500 text-xs font-bold justify-center sm:justify-start">
-                    <Star className="w-3.5 h-3.5 fill-amber-500" />
-                    <span>{doc.rating}</span>
-                    <span className="text-slate-400 font-normal">({doc.reviews})</span>
+                  <div className="text-xs font-bold text-slate-700">
+                    Rating: {doc.rating} ({doc.reviews} reviews)
                   </div>
                 </div>
 
-                <p className="text-xs font-semibold text-teal-600 mt-0.5">{doc.specialty}</p>
+                <p className="text-xs font-semibold text-teal-700 mt-0.5">{doc.specialty}</p>
                 <p className="text-xs text-slate-500 mt-1">{doc.education} · {doc.experience}</p>
 
                 <div className="mt-3 flex items-center gap-3 justify-center sm:justify-start">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-50 text-teal-800 border border-teal-200">
                     {doc.availability}
                   </span>
                   <button
@@ -91,7 +88,7 @@ export default function FindDoctorModal({ isOpen, onClose, onBookWithDoctor }) {
                       onClose();
                       onBookWithDoctor(doc);
                     }}
-                    className="px-4 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-600 text-white font-semibold text-xs shadow-xs transition-all cursor-pointer"
+                    className="px-4 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-all"
                   >
                     Book Consultation
                   </button>
@@ -104,4 +101,3 @@ export default function FindDoctorModal({ isOpen, onClose, onBookWithDoctor }) {
     </div>
   );
 }
-

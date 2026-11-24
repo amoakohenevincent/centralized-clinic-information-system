@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
 
@@ -18,21 +18,17 @@ export const PrescriptionHandoff = ({ prescription, onNavigate }) => {
     <div className="max-w-2xl mx-auto space-y-6 py-8 px-4 animate-fadeIn">
       {/* Success Hero Card */}
       <div className="bg-white rounded-3xl border border-slate-100 p-8 sm:p-10 shadow-card text-center space-y-4">
-        <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto shadow-inner">
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-          </svg>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-teal-50 text-teal-700 text-xs font-bold border border-teal-200/80 mb-1">
+          <span className="w-2 h-2 rounded-full bg-teal-500" />
+          <span>Handoff Confirmed & Transmitted</span>
         </div>
 
         <div>
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-            Handoff Confirmed & Transmitted
-          </span>
           <h2 className="text-2xl font-bold text-slate-900 mt-2">
             Prescription Sent to Pharmacy
           </h2>
           <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
-            The prescription record has been registered in the central CCIS database and is now available in Madam Sarah's Pharmacy queue for dispensing.
+            The prescription record has been registered in the central CCIS database and is now available in the Pharmacy queue for dispensing.
           </p>
         </div>
 
@@ -99,7 +95,7 @@ export const PrescriptionHandoff = ({ prescription, onNavigate }) => {
             size="md"
             onClick={() => onNavigate('create')}
           >
-            + Create Another Prescription
+            Create Another Prescription
           </Button>
         </div>
       </div>
