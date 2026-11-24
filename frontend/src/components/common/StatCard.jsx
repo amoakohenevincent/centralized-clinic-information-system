@@ -61,3 +61,5 @@ export const StatCard = ({ title, count, subtitle, icon: Icon, color = 'teal', o
     </div>
   );
 };
+
+export default StatCard;

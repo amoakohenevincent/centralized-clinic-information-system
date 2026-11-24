@@ -63,3 +63,5 @@ export const Alert = ({ type = 'info', title, message, children, className = '',
     </div>
   );
 };
+
+export default Alert;
