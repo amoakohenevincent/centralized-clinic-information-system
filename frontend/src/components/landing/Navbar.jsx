@@ -77,6 +77,16 @@ export default function LandingNavbar({ onBookClick }) {
               Book Appointment
             </button>
 
+            {/* Live External SMS Gateway Trigger */}
+            <button
+              onClick={() => setSmsModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-teal-800 bg-teal-50 hover:bg-teal-100/80 border border-teal-200 transition-all shadow-xs"
+              title="Open External SMS Gateway Delivery Receipts & Live Dispatcher"
+            >
+              <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+              <span>SMS Alerts</span>
+            </button>
+
             {/* Staff Portal Dropdown */}
             <div className="relative">
               <button
@@ -160,6 +170,13 @@ export default function LandingNavbar({ onBookClick }) {
                 className="w-full py-2.5 rounded-xl bg-teal-600 text-white font-bold text-sm"
               >
                 Book Appointment
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setSmsModalOpen(true); }}
+                className="w-full py-2.5 rounded-xl bg-teal-50 text-teal-800 border border-teal-200 font-bold text-sm flex items-center justify-center gap-2"
+              >
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                <span>SMS Notification Center</span>
               </button>
               <button
                 onClick={() => { setMobileMenuOpen(false); navigate('/doctor/dashboard'); }}
