@@ -27,15 +27,15 @@ describe('Clinical Records Management — Consultation & Diagnosis Tests', () =>
 
     // Seed test doctor user
     testDoctor = await User.create({
-      username: 'dr_jenkins',
-      email: 'dr.jenkins@clinic.university.edu',
+      username: 'dr_kmensah',
+      email: 'kwabena.mensah@clinic.ug.edu.gh',
       password: 'hashed_password_placeholder',
       role: 'doctor',
       title: 'Dr.',
-      firstName: 'Sarah',
-      lastName: 'Jenkins',
-      specialization: 'Internal Medicine',
-      medicalLicenseNumber: 'MD-88319',
+      firstName: 'Kwabena',
+      lastName: 'Mensah',
+      specialization: 'Internal Medicine & Campus Health',
+      medicalLicenseNumber: 'MDC/RN/2014/88319',
     });
 
     doctorToken = generateTestToken({
@@ -51,14 +51,14 @@ describe('Clinical Records Management — Consultation & Diagnosis Tests', () =>
       patientId: 'PAT-2026-0001',
       universityId: 'STU-2023-4412',
       patientType: 'student',
-      firstName: 'Alex',
-      lastName: 'Rivera',
-      email: 'alex.rivera@student.university.edu',
-      phoneNumber: '+1-555-0199',
+      firstName: 'Kofi',
+      lastName: 'Mensah',
+      email: 'kofi.mensah@st.ug.edu.gh',
+      phoneNumber: '+233241234567',
       dateOfBirth: new Date('2003-05-14'),
       gender: 'male',
       bloodGroup: 'O+',
-      department: 'Faculty of Science',
+      department: 'Department of Computer Science',
     });
 
     // Seed test appointment

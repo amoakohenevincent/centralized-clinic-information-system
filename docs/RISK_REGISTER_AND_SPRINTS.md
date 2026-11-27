@@ -67,3 +67,4 @@ The risk register monitors project hazards across technical, clinical governance
   - *US-09:* As a clinical user, I want a clean, responsive UI with zero distracting icons and high readability.
   - *US-10:* As an evaluator, I want a complete Word and PDF specification with verified UML diagrams.
 - **Sprint Review & Velocity:** 20 Story Points completed (Total project: 62 Story Points).
+

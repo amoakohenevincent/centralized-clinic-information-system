@@ -29,12 +29,12 @@
 ### 1.1 Purpose
 This document provides the complete functional, non-functional, and architectural specification for the **Centralized Clinic Information System (CCIS)**. It serves as the primary technical specification for academic evaluators, clinical end-users, software developers, and quality assurance engineers.
 
-### 1.2 Problem Statement & Motivation
-University health clinics face persistent operational friction:
-- **Excessive Waiting Room Congestion:** Patients wait in unstructured physical queues without visibility into clinician availability or estimated consultation times.
-- **Fragmented Paper Folders:** Physical health records are vulnerable to misfiling, duplicate registrations, and manual handwriting illegibility.
-- **Uncoordinated Prescription Handoffs:** Prescriptions handwritten by medical doctors must be manually carried to the university dispensary, frequently leading to stock-out delays and transcription errors.
-- **Lack of Patient Self-Service:** Students and faculty members have no mechanism to pre-book appointments around their lecture timetables.
+### 1.2 Problem Statement & Ghanaian Society Context
+University health centers in Ghanaian tertiary institutions (such as the University Health Services Directorate at Legon, UGMS Korle-Bu, KNUST, and UCC facilities) face persistent operational friction:
+- **Excessive Waiting Room Congestion:** Students and university staff wait in unstructured physical queues without visibility into clinician availability or estimated consultation times.
+- **Fragmented Paper Folders:** Physical health records and patient cards are vulnerable to misfiling, duplicate registrations, and manual handwriting illegibility across campus halls and clinics.
+- **Uncoordinated Prescription Handoffs:** Prescriptions handwritten by medical doctors must be manually carried to the campus pharmacy, frequently leading to stock-out delays and transcription errors.
+- **Lack of Patient Self-Service:** Students and faculty members residing across halls (e.g. Commonwealth, Akuafo, Volta, Staff Village, Pentagon) have no mechanism to pre-book appointments around their lecture timetables.
 
 ### 1.3 Project Scope
 In compliance with the Group Project Brief requiring **3–5 core features**, a **database**, and an **external service**, CCIS delivers:
@@ -42,7 +42,7 @@ In compliance with the Group Project Brief requiring **3–5 core features**, a 
 2. **Module 2 (Clinical Consultation Records):** Clinician workstation for recording vital signs (with automatic BMI calculation), SOAP notes, ICD-10 diagnoses, and controlled audit amendments.
 3. **Module 3 (Electronic Prescription & Dispensing):** Prescription authoring, formulary stock checks, 3-stage dispensing tracking, and collection workflows.
 4. **Module 4 (Patient Portal):** Self-service appointment scheduling, time slot reservation, and contact information management.
-5. **External Service (SMS Notification Gateway):** Automated SMS delivery for appointment booking confirmations, front desk check-in receipts, and pharmacy pickup alerts.
+5. **External Service (SMS Notification Gateway):** Automated SMS delivery for appointment booking confirmations, front desk check-in receipts, and pharmacy pickup alerts, formatted for Ghanaian mobile networks (MTN, Telecel, AT Ghana) via E.164 (`+233...`).
 
 ---
 
@@ -310,3 +310,4 @@ In accordance with the Academic Group Project Brief, the team operated on a 3-we
 The formal Word and PDF editions containing all rendered diagrams, tables, and formatting have been placed in the repository's `docs/` directory:
 - [CCIS_SRS_and_Design_Document.docx](file:///C:/Users/RICH/Desktop/CCIS/centralized-clinic-information-system/docs/CCIS_SRS_and_Design_Document.docx) (1.73 MB, fully styled Microsoft Word document with cover page)
 - [CCIS_SRS_and_Design_Document.pdf](file:///C:/Users/RICH/Desktop/CCIS/centralized-clinic-information-system/docs/CCIS_SRS_and_Design_Document.pdf) (2.05 MB, publication-ready PDF with running headers and page numbers)
+

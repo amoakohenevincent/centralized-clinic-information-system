@@ -1,4 +1,4 @@
-﻿const express = require("express");
+const express = require("express");
 const appointments = require("../services/appointmentService");
 const { requireRole } = require("../middleware/authz");
 const { ApiError } = require("../errors");
@@ -62,6 +62,13 @@ router.patch("/:appointmentId/cancel", requireRole("patient", "receptionist"), a
 router.patch("/:appointmentId/status", requireRole("receptionist"), asyncRoute(async (req, res) => {
   validateId(req.params.appointmentId);
   const data = await appointments.updateStatus(req.params.appointmentId, req.body.status);
+  
+  if (req.body.status === "checked_in" && req.app.locals.notificationProvider?.sendAppointmentCheckIn) {
+    req.app.locals.notificationProvider.sendAppointmentCheckIn(data).catch((e) =>
+      console.warn("[EXTERNAL SMS GATEWAY] Check-in notification error:", e.message)
+    );
+  }
+  
   res.json({ data });
 }));
 

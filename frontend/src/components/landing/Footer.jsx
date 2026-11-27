@@ -78,9 +78,9 @@ export default function Footer() {
           {/* Contact Us (Col 5) */}
           <div className="lg:col-span-2 space-y-2 text-xs text-slate-600">
             <h4 className="font-bold text-sm text-slate-900 mb-3">Contact Us</h4>
-            <p>123 HealthCare Street, New York, USA 10001</p>
-            <p className="font-semibold text-slate-900">+1 234 567 8900</p>
-            <p className="text-teal-700 truncate">info@mediwellpharma.com</p>
+            <p>University Health Services Directorate, Legon Bypass, University of Ghana, Accra, Ghana</p>
+            <p className="font-semibold text-slate-900">+233 30 212 3456 / 024 456 7890</p>
+            <p className="text-teal-700 truncate">info@mediwell.ug.edu.gh</p>
           </div>
 
         </div>
@@ -89,7 +89,7 @@ export default function Footer() {
       {/* Bottom Copyright Strip */}
       <div className="bg-slate-900 text-slate-400 py-4 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs">
-          <p>© 2024 MediWell Pharma. All Rights Reserved.</p>
+          <p>© 2026 MediWell University Clinic & Pharmacy. All Rights Reserved. Republic of Ghana.</p>
         </div>
       </div>
     </footer>

@@ -97,3 +97,4 @@ describe('POST /api/consultations (Clinical Encounter Recording)', () => {
 - **Passed:** 13 (100%)
 - **Failed:** 0 (0%)
 - **Automated Regression Status:** All core modules pass automated build and unit verification cleanly.
+

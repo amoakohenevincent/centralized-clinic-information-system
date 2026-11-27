@@ -77,7 +77,7 @@ export const clinicalService = {
             { condition: 'Bronchial Asthma', icdCode: 'J45.909', status: 'managed', diagnosedDate: '2019-04-12' },
           ],
           pastSurgeries: [
-            { procedure: 'Appendectomy', year: 2021, hospital: 'University Teaching Hospital' },
+            { procedure: 'Appendectomy', year: 2021, hospital: 'Korle-Bu Teaching Hospital, Accra' },
           ],
           immunizationRecords: [
             { vaccineName: 'Hepatitis B', administeredDate: '2022-08-10', doseNumber: 3 },
@@ -105,7 +105,7 @@ export const clinicalService = {
             diagnosisType: 'primary',
             severity: 'moderate',
             consultationDate: '2026-11-10T09:30:00Z',
-            doctorName: 'Dr. Sarah Jenkins',
+            doctorName: 'Dr. Kwabena Mensah',
           },
         ],
         previousPrescriptions: [

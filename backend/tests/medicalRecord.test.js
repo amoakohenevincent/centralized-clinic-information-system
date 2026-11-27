@@ -27,13 +27,13 @@ describe('Clinical Records Management — Medical History & Patient Search Tests
     await clearTestDB();
 
     testDoctor = await User.create({
-      username: 'dr_jenkins',
-      email: 'dr.jenkins@clinic.university.edu',
+      username: 'dr_kmensah',
+      email: 'kwabena.mensah@clinic.ug.edu.gh',
       password: 'hashed_password',
       role: 'doctor',
       title: 'Dr.',
-      firstName: 'Sarah',
-      lastName: 'Jenkins',
+      firstName: 'Kwabena',
+      lastName: 'Mensah',
     });
 
     doctorToken = generateTestToken({
@@ -45,22 +45,22 @@ describe('Clinical Records Management — Medical History & Patient Search Tests
       patientId: 'PAT-2026-0001',
       universityId: 'STU-2024-9988',
       patientType: 'student',
-      firstName: 'Maria',
-      lastName: 'Santos',
-      email: 'maria.santos@student.university.edu',
+      firstName: 'Ama',
+      lastName: 'Serwaa',
+      email: 'ama.serwaa@st.ug.edu.gh',
       dateOfBirth: new Date('2002-09-12'),
       gender: 'female',
       bloodGroup: 'B+',
-      department: 'Faculty of Engineering',
+      department: 'Department of Computer Science',
     });
 
     testPatient2 = await Patient.create({
       patientId: 'PAT-2026-0002',
       universityId: 'EMP-2019-1002',
       patientType: 'staff',
-      firstName: 'Robert',
-      lastName: 'Chen',
-      email: 'robert.chen@faculty.university.edu',
+      firstName: 'Kwame',
+      lastName: 'Boateng',
+      email: 'kwame.boateng@ug.edu.gh',
       dateOfBirth: new Date('1985-04-22'),
       gender: 'male',
       bloodGroup: 'O-',

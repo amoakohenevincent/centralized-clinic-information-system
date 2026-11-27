@@ -206,7 +206,7 @@ export default function WalkInRegistration() {
                 type="tel"
                 required
                 maxLength={30}
-                placeholder="e.g. 055-123-4567"
+                placeholder="e.g. 024 123 4567 or 055 987 6543"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 className="w-full px-3.5 py-2.5 border border-slate-200 rounded-2xl bg-slate-50 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"
@@ -218,7 +218,7 @@ export default function WalkInRegistration() {
               <input
                 type="text"
                 maxLength={300}
-                placeholder="Hall / Hostel / Faculty address"
+                placeholder="e.g. Commonwealth Hall Room B12, Legon or Pentagon Hostel, Accra"
                 value={form.address}
                 onChange={(e) => setForm({ ...form, address: e.target.value })}
                 className="w-full px-3.5 py-2.5 border border-slate-200 rounded-2xl bg-slate-50 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-400/20"

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { SMSNotificationCenterModal } from '../common/SMSNotificationCenterModal';
 
 const DoctorNavbar = () => {
   const { currentUser, switchRole } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [smsModalOpen, setSmsModalOpen] = useState(false);
 
   const role = currentUser?.role || 'doctor';
 
@@ -65,6 +67,16 @@ const DoctorNavbar = () => {
             >
               Public Site
             </Link>
+
+            {/* Live External SMS Gateway Trigger */}
+            <button
+              onClick={() => setSmsModalOpen(true)}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold text-teal-800 bg-teal-50 hover:bg-teal-100/70 border border-teal-200 transition-all"
+              title="Open External SMS Gateway Delivery Receipts & Live Dispatcher"
+            >
+              <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+              <span>SMS Alerts</span>
+            </button>
           </div>
 
           {/* Desktop Navigation Links */}
@@ -162,7 +174,7 @@ const DoctorNavbar = () => {
         {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
           <div className="xl:hidden py-4 border-t border-slate-200 space-y-4 bg-white">
-            <div className="px-2 pb-2 border-b border-slate-200">
+            <div className="px-2 pb-2 border-b border-slate-200 flex items-center justify-between">
               <Link
                 to="/"
                 onClick={() => setMobileMenuOpen(false)}
@@ -170,6 +182,17 @@ const DoctorNavbar = () => {
               >
                 Return to Public Website
               </Link>
+
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setSmsModalOpen(true);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold text-teal-800 bg-teal-50 border border-teal-200"
+              >
+                <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+                <span>SMS Gateway</span>
+              </button>
             </div>
 
             <div>
@@ -228,6 +251,12 @@ const DoctorNavbar = () => {
           </div>
         )}
       </div>
+
+      {/* External Service: Live SMS Notification Center Modal */}
+      <SMSNotificationCenterModal
+        isOpen={smsModalOpen}
+        onClose={() => setSmsModalOpen(false)}
+      />
     </header>
   );
 };

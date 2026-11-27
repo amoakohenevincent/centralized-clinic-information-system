@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { SMSNotificationCenterModal } from '../common/SMSNotificationCenterModal';
 
 export default function LandingNavbar({ onBookClick }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [portalDropdownOpen, setPortalDropdownOpen] = useState(false);
+  const [smsModalOpen, setSmsModalOpen] = useState(false);
   const { switchRole } = useAuth();
   const navigate = useNavigate();
 
@@ -60,10 +62,10 @@ export default function LandingNavbar({ onBookClick }) {
             {/* 24/7 Phone Support */}
             <div className="text-right leading-tight pr-1">
               <span className="block text-xs font-bold text-slate-900 tracking-tight">
-                +1 234 567 8900
+                +233 30 212 3456
               </span>
               <span className="block text-[10px] font-semibold text-teal-700">
-                24/7 Support Desk
+                24/7 Campus Clinic Desk
               </span>
             </div>
 
@@ -117,6 +119,17 @@ export default function LandingNavbar({ onBookClick }) {
                     <span className="font-bold block">Patient Portal</span>
                     <span className="text-[10px] text-slate-500">Self-booking & records</span>
                   </button>
+
+                  <button
+                    onClick={() => {
+                      setPortalDropdownOpen(false);
+                      setSmsModalOpen(true);
+                    }}
+                    className="w-full text-left px-3.5 py-2 text-xs text-teal-800 hover:bg-teal-50 border-t border-slate-100"
+                  >
+                    <span className="font-bold block">SMS Gateway Logs</span>
+                    <span className="text-[10px] text-slate-500">Live external delivery receipts</span>
+                  </button>
                 </div>
               )}
             </div>
@@ -158,6 +171,12 @@ export default function LandingNavbar({ onBookClick }) {
           </div>
         )}
       </div>
+
+      {/* External Service: SMS Notification Center Modal */}
+      <SMSNotificationCenterModal
+        isOpen={smsModalOpen}
+        onClose={() => setSmsModalOpen(false)}
+      />
     </header>
   );
 }

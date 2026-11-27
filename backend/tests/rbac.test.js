@@ -27,22 +27,22 @@ describe('Clinical Records Management — Role-Based Access Control (RBAC) & Sec
     await clearTestDB();
 
     testDoctor = await User.create({
-      username: 'dr_jenkins',
-      email: 'dr.jenkins@clinic.university.edu',
+      username: 'dr_kmensah',
+      email: 'kwabena.mensah@clinic.ug.edu.gh',
       password: 'hashed_password',
       role: 'doctor',
       title: 'Dr.',
-      firstName: 'Sarah',
-      lastName: 'Jenkins',
+      firstName: 'Kwabena',
+      lastName: 'Mensah',
     });
 
     testPatient = await Patient.create({
       patientId: 'PAT-2026-0001',
       universityId: 'STU-2024-1122',
       patientType: 'student',
-      firstName: 'Daniel',
-      lastName: 'Kim',
-      email: 'daniel.kim@student.university.edu',
+      firstName: 'Kofi',
+      lastName: 'Mensah',
+      email: 'kofi.mensah@st.ug.edu.gh',
       dateOfBirth: new Date('2001-02-14'),
       gender: 'male',
     });

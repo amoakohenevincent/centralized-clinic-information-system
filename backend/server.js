@@ -44,6 +44,14 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ─── Authentication Endpoints (unauthenticated login / demo-session) ───
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
+// ─── External Service: Register SMS Notification Provider ───
+const smsService = require('./services/smsService');
+app.locals.notificationProvider = smsService;
+
 // ─── Shared JWT Authentication for all /api routes ───
 app.use('/api', authenticateToken);
 

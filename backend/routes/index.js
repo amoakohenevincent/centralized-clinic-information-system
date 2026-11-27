@@ -13,6 +13,9 @@ const prescriptionRoutes = require('./prescriptionRoutes');
 // Module 4: Pharmacy & Inventory routes (team member's code)
 const inventoryRoutes = require('./inventoryRoutes');
 
+// External Service: SMS Gateway Notifications
+const notificationRoutes = require('./notificationRoutes');
+
 // Module 1: Patient & Appointment routes (from main branch)
 const patientRoutes = require('../src/routes/patientRoutes');
 const appointmentRoutes = require('../src/routes/appointmentRoutes');
@@ -33,5 +36,8 @@ router.use('/prescriptions', prescriptionRoutes);
 // ─── Module 4: Pharmacy & Inventory Management ───
 router.use('/medicines', inventoryRoutes);
 router.use('/inventory', inventoryRoutes);
+
+// ─── External Service: SMS & Notification Gateway ───
+router.use('/notifications', notificationRoutes);
 
 module.exports = router;

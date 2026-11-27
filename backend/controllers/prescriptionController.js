@@ -1,7 +1,8 @@
-﻿const Prescription = require('../models/Prescription');
+const Prescription = require('../models/Prescription');
 const Medicine = require('../models/Medicine');
 const { generatePrescriptionNumber } = require('../utils/prescriptionIdGenerator');
 const { createAuditEntry } = require('../utils/auditLogger');
+const smsService = require('../services/smsService');
 
 /**
  * @desc    Create a new prescription after clinical consultation
@@ -506,6 +507,17 @@ exports.updateDispenseStatus = async (req, res) => {
     );
 
     const updatedPrescription = await prescription.save();
+
+    // Trigger External SMS notification to patient upon fulfillment
+    if (status === 'fulfilled') {
+      smsService.sendPrescriptionReadyAlert(updatedPrescription).catch((err) =>
+        console.warn('[EXTERNAL SMS GATEWAY] Prescription ready notification dispatch failed:', err.message)
+      );
+    } else if (status === 'partially_dispensed') {
+      smsService.sendPrescriptionPartialAlert(updatedPrescription).catch((err) =>
+        console.warn('[EXTERNAL SMS GATEWAY] Partial prescription notification dispatch failed:', err.message)
+      );
+    }
 
     return res.status(200).json({
       success: true,

@@ -64,7 +64,7 @@ export default function LandingPage() {
           el?.scrollIntoView({ behavior: 'smooth' });
         }}
         onEmergencyCall={() => {
-          window.location.href = 'tel:+12345678900';
+          window.location.href = 'tel:+233302123456';
         }}
       />
 

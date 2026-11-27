@@ -84,11 +84,11 @@ export default function WhyChooseUs({ onLearnMoreClick, onEmergencyCall }) {
 
               {/* Phone Pill Button */}
               <a
-                href="tel:+12345678900"
+                href="tel:+233302123456"
                 onClick={onEmergencyCall}
                 className="mt-5 inline-flex items-center justify-center w-full py-3 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-sm shadow-sm transition-all text-center"
               >
-                +1 234 567 8900
+                +233 30 212 3456
               </a>
             </div>
 

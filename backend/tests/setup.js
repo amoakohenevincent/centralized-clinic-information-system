@@ -50,9 +50,9 @@ const generateTestToken = (userPayload = {}) => {
     id: userPayload._id || new mongoose.Types.ObjectId(),
     username: userPayload.username || 'test_doctor',
     role: userPayload.role || 'doctor',
-    firstName: userPayload.firstName || 'Sarah',
-    lastName: userPayload.lastName || 'Jenkins',
-    email: userPayload.email || 'dr.jenkins@clinic.university.edu',
+    firstName: userPayload.firstName || 'Kwabena',
+    lastName: userPayload.lastName || 'Mensah',
+    email: userPayload.email || 'kwabena.mensah@clinic.ug.edu.gh',
   };
 
   return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });

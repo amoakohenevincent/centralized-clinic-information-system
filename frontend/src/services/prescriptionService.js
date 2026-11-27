@@ -1,11 +1,21 @@
-﻿/**
+/**
  * CCIS Prescription Service
  * Connects Frontend UI to Backend REST Endpoints with built-in resilience.
  * If backend server is unreachable (e.g., during UI testing), transparently uses
  * persistent local storage and fictional mock data.
  */
 
+import api, { fetchDemoSessionToken } from './api';
+
 const API_BASE = '/api/prescriptions';
+
+async function getAuthHeader() {
+  let token = localStorage.getItem('ccis_token') || localStorage.getItem('ccis_jwt');
+  if (!token || token.startsWith('mock') || token.split('.').length !== 3) {
+    token = await fetchDemoSessionToken();
+  }
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 // Shared medicine catalogue stub reflecting Madam Sarah's Pharmacy Module catalogue
 export const INITIAL_MEDICINE_CATALOGUE = [
@@ -335,7 +345,7 @@ export const prescriptionService = {
   async getDashboardStats() {
     try {
       const res = await fetch(`${API_BASE}/dashboard-stats`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('ccis_jwt') || 'mock'}` }
+        headers: await getAuthHeader()
       });
       if (res.ok) {
         const json = await res.json();
@@ -366,7 +376,7 @@ export const prescriptionService = {
       if (patientId) queryParams.set('patientId', patientId);
 
       const res = await fetch(`${API_BASE}?${queryParams.toString()}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('ccis_jwt') || 'mock'}` }
+        headers: await getAuthHeader()
       });
       if (res.ok) {
         const json = await res.json();
@@ -399,7 +409,7 @@ export const prescriptionService = {
   async getPrescriptionById(id) {
     try {
       const res = await fetch(`${API_BASE}/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('ccis_jwt') || 'mock'}` }
+        headers: await getAuthHeader()
       });
       if (res.ok) {
         const json = await res.json();
@@ -422,7 +432,7 @@ export const prescriptionService = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('ccis_jwt') || 'mock'}`
+          ...(await getAuthHeader())
         },
         body: JSON.stringify(payload)
       });
@@ -561,6 +571,20 @@ export const prescriptionService = {
     });
 
     saveLocalPrescriptions(list);
+
+    // Trigger External SMS pickup notification when fulfilled or partially dispensed
+    if (status === 'fulfilled' || status === 'partially_dispensed') {
+      api
+        .post('/notifications/prescription-alert', {
+          prescriptionNumber: rx.prescriptionNumber,
+          patientName: rx.patientName,
+          phone: rx.patientPhone || '+233551234567',
+          status,
+          items: rx.items,
+        })
+        .catch(() => {});
+    }
+
     return rx;
   },
 
